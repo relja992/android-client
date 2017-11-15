@@ -7,7 +7,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.ljuba.trucks_client.R;
+import com.example.ljuba.trucks_client.app.AppConfig;
+import com.example.ljuba.trucks_client.app.AppController;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -15,13 +21,19 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
 
     Double latitude, longitude;
+    String user_id;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -62,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         // Fetching user details from sqlite
         HashMap<String, String> user = db.getUserDetails();
 
+        user_id = user.get("uid");
         String name = user.get("name");
         String email = user.get("email");
 
@@ -111,11 +125,54 @@ public class MainActivity extends AppCompatActivity {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                             txtName.setText(latitude.toString() + " " + longitude.toString());
+                            sendLocatinToServer(user_id,latitude.toString(),longitude.toString());
+                            Toast.makeText(getApplicationContext(), "Uspesno poslati podaci o lokaciji", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
 
     }
+
+
+    /**
+     * slanje gps podataka na server nakon kilka na dugme
+     * */
+    private void sendLocatinToServer(final String user_id, final String latitude, final String longitude) {
+        String tag_string_req = "req_login";
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_LOCATION, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Postovanje parametara na server za poziciju
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", user_id);
+                params.put("latitude", latitude);
+                params.put("longitude", longitude);
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared

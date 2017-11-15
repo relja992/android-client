@@ -7,4 +7,7 @@ public class AppConfig {
 
     // Server user register url
     public static String URL_REGISTER = "http://trucks-server.rimteam.com/users/register";
+
+    // Server locations
+    public static String URL_LOCATION = "http://trucks-server.rimteam.com/users/location";
 }
