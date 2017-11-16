@@ -110,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Metoda koja implementira slanje lokacije na server
+    /**
+     * Metoda koja implementira slanje sopstvene lokacije na server
+     * */
     private void sendLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -133,6 +135,18 @@ public class MainActivity extends AppCompatActivity {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
 
+                            final String sirina = latitude.toString();
+                            final String duzina = longitude.toString();
+
+                            // Fetching user details from sqlite
+                            HashMap<String, String> user = db.getUserDetails();
+
+                            user_id = user.get("uid");
+
+//////////////////////////////////////////////////////////////////////////////
+///////////////////Koriscenje volley biblioteke///////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
                             // Tag used to cancel the request
                             String tag_string_req = "req_location";
 
@@ -151,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
                                         JSONObject jObj = new JSONObject(response);
                                         boolean error = jObj.getBoolean("error");
                                         if (!error) {
+
+                                            //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU
+
 //                                            // User successfully stored in MySQL
 //                                            // Now store the user in sqlite
 //                                            String uid = jObj.getString("uid");
@@ -163,14 +180,7 @@ public class MainActivity extends AppCompatActivity {
 //                                            // Inserting row in users table
 //                                            db.addUser(name, email, uid, created_at);
 
-                                            Toast.makeText(getApplicationContext(), "Successfully sent location values.", Toast.LENGTH_LONG).show();
-
-//                                            // Launch login activity
-//                                            Intent intent = new Intent(
-//                                                    RegisterActivity.this,
-//                                                    LoginActivity.class);
-//                                            startActivity(intent);
-//                                            finish();
+                                            Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
                                         } else {
 
                                             // Error occurred in registration. Get the error
@@ -200,14 +210,9 @@ public class MainActivity extends AppCompatActivity {
                                     // Posting params to register url
                                     Map<String, String> params = new HashMap<String, String>();
 
-                                    // Fetching user details from sqlite
-                                    HashMap<String, String> user = db.getUserDetails();
-
-                                    String uid = user.get("uid");
-
-                                    params.put("user_id", uid);
-                                    params.put("latitude", latitude.toString());
-                                    params.put("longitude", longitude.toString());
+                                    params.put("user_id", user_id);
+                                    params.put("latitude", sirina);
+                                    params.put("longitude", duzina);
 
                                     return params;
                                 }
@@ -220,49 +225,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
     }
-
-
-    /**
-     * slanje gps podataka na server nakon kilka na dugme
-     * */
-    private void sendLocatinToServer(final String user_id, final String latitude, final String longitude) {
-        String tag_string_req = "req_login";
-        StringRequest strReq = new StringRequest(Request.Method.POST,
-                AppConfig.URL_LOCATION, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-
-
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                // Postovanje parametara na server za poziciju
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("user_id", user_id);
-                params.put("latitude", latitude);
-                params.put("longitude", longitude);
-
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
-    }
-
-
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared

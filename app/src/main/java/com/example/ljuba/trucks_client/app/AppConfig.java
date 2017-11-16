@@ -10,5 +10,5 @@ public class AppConfig {
 
     // Server send user location
     public static String URL_SEND_LOCATION = "http://trucks-server.rimteam.com/users/location";
-    
+
 }
