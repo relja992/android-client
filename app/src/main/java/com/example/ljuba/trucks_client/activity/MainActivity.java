@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
 
     Double latitude, longitude;
+    String user_id;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         // Fetching user details from sqlite
         HashMap<String, String> user = db.getUserDetails();
 
+        user_id = user.get("uid");
         String name = user.get("name");
         String email = user.get("email");
 
@@ -130,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                             // Logic to handle location object
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-
 
                             // Tag used to cancel the request
                             String tag_string_req = "req_location";
@@ -216,12 +217,52 @@ public class MainActivity extends AppCompatActivity {
                             // Adding request to request queue
                             AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
 
-
                         }
                     }
                 });
 
     }
+
+
+    /**
+     * slanje gps podataka na server nakon kilka na dugme
+     * */
+    private void sendLocatinToServer(final String user_id, final String latitude, final String longitude) {
+        String tag_string_req = "req_login";
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_LOCATION, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Postovanje parametara na server za poziciju
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", user_id);
+                params.put("latitude", latitude);
+                params.put("longitude", longitude);
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared
