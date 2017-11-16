@@ -1,13 +1,20 @@
 package com.example.ljuba.trucks_client.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.ljuba.trucks_client.R;
+import com.example.ljuba.trucks_client.app.AppConfig;
+import com.example.ljuba.trucks_client.app.AppController;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -15,16 +22,23 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private TextView txtName;
     private TextView txtEmail;
     private Button btnLogout;
@@ -37,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient mFusedLocationClient;
 
+    private ProgressDialog pDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         btnLocation = (Button) findViewById(R.id.btnLocation);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Progress dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -110,7 +130,93 @@ public class MainActivity extends AppCompatActivity {
                             // Logic to handle location object
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            txtName.setText(latitude.toString() + " " + longitude.toString());
+
+
+                            // Tag used to cancel the request
+                            String tag_string_req = "req_location";
+
+                            pDialog.setMessage("Sending Location ...");
+                            showDialog();
+
+                            StringRequest strReq = new StringRequest(Request.Method.POST,
+                                    AppConfig.URL_SEND_LOCATION, new Response.Listener<String>() {
+
+                                @Override
+                                public void onResponse(String response) {
+                                    Log.d(TAG, "Sending Location Response: " + response.toString());
+                                    hideDialog();
+
+                                    try {
+                                        JSONObject jObj = new JSONObject(response);
+                                        boolean error = jObj.getBoolean("error");
+                                        if (!error) {
+//                                            // User successfully stored in MySQL
+//                                            // Now store the user in sqlite
+//                                            String uid = jObj.getString("uid");
+//
+//                                            JSONObject user = jObj.getJSONObject("user");
+//                                            String name = user.getString("name");
+//                                            String email = user.getString("email");
+//                                            String created_at = user.getString("created_at");
+//
+//                                            // Inserting row in users table
+//                                            db.addUser(name, email, uid, created_at);
+
+                                            Toast.makeText(getApplicationContext(), "Successfully sent location values.", Toast.LENGTH_LONG).show();
+
+//                                            // Launch login activity
+//                                            Intent intent = new Intent(
+//                                                    RegisterActivity.this,
+//                                                    LoginActivity.class);
+//                                            startActivity(intent);
+//                                            finish();
+                                        } else {
+
+                                            // Error occurred in registration. Get the error
+                                            // message
+                                            String errorMsg = jObj.getString("error_msg");
+                                            Toast.makeText(getApplicationContext(),
+                                                    errorMsg, Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }, new Response.ErrorListener() {
+
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.e(TAG, "Sending Location Error: " + error.getMessage());
+                                    Toast.makeText(getApplicationContext(),
+                                            error.getMessage(), Toast.LENGTH_LONG).show();
+                                    hideDialog();
+                                }
+                            }) {
+
+                                @Override
+                                protected Map<String, String> getParams() {
+                                    // Posting params to register url
+                                    Map<String, String> params = new HashMap<String, String>();
+
+                                    // Fetching user details from sqlite
+                                    HashMap<String, String> user = db.getUserDetails();
+
+                                    String uid = user.get("uid");
+
+                                    params.put("user_id", uid);
+                                    params.put("latitude", latitude.toString());
+                                    params.put("longitude", longitude.toString());
+
+                                    return params;
+                                }
+
+                            };
+
+                            // Adding request to request queue
+                            AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
+
                         }
                     }
                 });
@@ -130,5 +236,15 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 }
