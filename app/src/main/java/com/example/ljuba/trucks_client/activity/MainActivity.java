@@ -143,9 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
                             user_id = user.get("uid");
 
-//////////////////////////////////////////////////////////////////////////////
-///////////////////Koriscenje volley biblioteke///////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+                            //////////////////////////////////////////////////////////////////////////////
+                            ///////////////////Koriscenje volley biblioteke///////////////////////////////
+                            //////////////////////////////////////////////////////////////////////////////
 
                             // Tag used to cancel the request
                             String tag_string_req = "req_location";
@@ -183,8 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
                                         } else {
 
-                                            // Error occurred in registration. Get the error
-                                            // message
+                                            // Error occurred in sending location. Get the error message
                                             String errorMsg = jObj.getString("error_msg");
                                             Toast.makeText(getApplicationContext(),
                                                     errorMsg, Toast.LENGTH_LONG).show();
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-
                                 }
                             }, new Response.ErrorListener() {
 
