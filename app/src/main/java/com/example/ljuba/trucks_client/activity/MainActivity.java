@@ -2,8 +2,10 @@ package com.example.ljuba.trucks_client.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +19,21 @@ import com.example.ljuba.trucks_client.app.AppConfig;
 import com.example.ljuba.trucks_client.app.AppController;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
 
     private ProgressDialog pDialog;
+
+    boolean mRequestingLocationUpdates = true;
+
+    private LocationCallback mLocationCallback;
+
+    LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +128,59 @@ public class MainActivity extends AppCompatActivity {
                 sendLocation();
             }
         });
+
+        createLocationRequest();
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+
+                    Double sirina = location.getLatitude();
+                    String ssirina = sirina.toString();
+                    Double duzina = location.getLongitude();
+                    String sduzina = duzina.toString();
+
+                    //Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), ssirina + ' ' + sduzina, Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    protected void createLocationRequest() {
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(3000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                mLocationCallback,
+                null /* Looper */);
     }
 
     /**
