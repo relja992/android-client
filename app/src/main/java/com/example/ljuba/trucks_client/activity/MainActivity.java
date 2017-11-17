@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                                         boolean error = jObj.getBoolean("error");
                                         if (!error) {
 
-                                            //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU
+                                            //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU i simhronizacija sa serverom
 
 //                                            // User successfully stored in MySQL
 //                                            // Now store the user in sqlite
