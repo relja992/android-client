@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private TextView txtName;
     private TextView txtEmail;
+    private TextView txtLastLocation;
     private Button btnLogout;
     private Button btnLocation;
 
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         txtName = (TextView) findViewById(R.id.name);
         txtEmail = (TextView) findViewById(R.id.email);
+        txtLastLocation = (TextView) findViewById(R.id.lastLocation);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnLocation = (Button) findViewById(R.id.btnLocation);
 
@@ -167,18 +169,20 @@ public class MainActivity extends AppCompatActivity {
                                         if (!error) {
 
                                             //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU i simhronizacija sa serverom
+                                            //upisivanje podataka o lokaciji
+                                            db.addLocation(sirina, duzina, user_id);
 
-//                                            // User successfully stored in MySQL
-//                                            // Now store the user in sqlite
-//                                            String uid = jObj.getString("uid");
-//
-//                                            JSONObject user = jObj.getJSONObject("user");
-//                                            String name = user.getString("name");
-//                                            String email = user.getString("email");
-//                                            String created_at = user.getString("created_at");
-//
-//                                            // Inserting row in users table
-//                                            db.addUser(name, email, uid, created_at);
+
+                                            // Fetching location details from sqlite
+                                            HashMap<String, String> lastLocation = db.getLastLocationDetails();
+
+                                            String lati = lastLocation.get("latitude");
+                                            String longi = lastLocation.get("longitude");
+
+
+                                            // Displaying last location location
+                                            txtLastLocation.setText("Lat:"+lati + " Long:" + longi +" User_id:" +user_id);
+
 
                                             Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
                                         } else {
