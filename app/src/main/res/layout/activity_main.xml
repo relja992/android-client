@@ -57,4 +57,13 @@
             android:textSize="15dp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_open_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:text="Pokreni Google Maps" />
+
 </RelativeLayout>

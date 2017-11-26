@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtEmail;
     private Button btnLogout;
     private Button btnLocation;
+    private Button btnOpenMap;
 
     private SQLiteHandler db;
     private SessionManager session;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnLocation = (Button) findViewById(R.id.btnLocation);
+        btnOpenMap = (Button) findViewById(R.id.btn_open_map);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -86,7 +88,17 @@ public class MainActivity extends AppCompatActivity {
                 sendLocation();
             }
         });
+        btnOpenMap.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
+
 
     //Metoda koja implementira slanje lokacije na server
     private void sendLocation() {
