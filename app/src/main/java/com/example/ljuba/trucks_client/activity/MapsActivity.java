@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
+
+    int duration;
+    double distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,9 +129,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for (Route route : routes) {
             if(route.id != routes.size()-1){
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
-                ((TextView) findViewById(R.id.udaljenost)).append(route.duration.text);
-                ((TextView) findViewById(R.id.trajanje)).append(route.distance.text);
+
+                duration += route.duration.value;
+                distance += route.distance.value;
 
                 originMarkers.add(mMap.addMarker(new MarkerOptions()
                         //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
@@ -144,9 +148,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 polylinePaths.add(mMap.addPolyline(polylineOptions));
             } else {
+
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
-                ((TextView) findViewById(R.id.udaljenost)).append(route.duration.text);
-                ((TextView) findViewById(R.id.trajanje)).append(route.distance.text);
+
+                duration += route.duration.value;
+                distance += route.distance.value;
 
                 originMarkers.add(mMap.addMarker(new MarkerOptions()
                         //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
@@ -169,5 +175,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 polylinePaths.add(mMap.addPolyline(polylineOptions));
             }
         }
+
+        DecimalFormat df = new DecimalFormat("#.00");
+        String udaljenost = df.format(distance/1000) + " km";
+
+        int minutes = duration/60;
+        int seconds = duration%60;
+        String trajanje = minutes + " m " + seconds + " s";
+
+        ((TextView) findViewById(R.id.udaljenost)).append(udaljenost);
+        ((TextView) findViewById(R.id.trajanje)).append(trajanje);
     }
 }

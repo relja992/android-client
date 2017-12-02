@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.ljuba.drivetest.MapsActivity"
+    tools:context="com.example.ljuba.trucks_client.activity.MapsActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"  >
@@ -14,21 +14,22 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/udaljenost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
             android:text="Udaljenost: "
-            android:layout_weight="1"
-            android:textSize="20dp"
-            android:padding="5dp"
-            android:id="@+id/udaljenost"/>
+            android:textSize="18sp" />
+
         <TextView
+            android:id="@+id/trajanje"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Trajanje: "
             android:layout_weight="1"
-            android:textSize="20dp"
             android:padding="5dp"
-            android:id="@+id/trajanje"/>
+            android:text="Trajanje: "
+            android:textSize="18sp" />
 
 
 

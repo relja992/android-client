@@ -7,7 +7,7 @@ package com.example.ljuba.trucks_client.helper.MapHelper;
 public class Distance {
 
     public String text;
-    public int value;
+    public double value;
 
     public Distance(String text, int value) {
         this.text = text;
