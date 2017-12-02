@@ -30,6 +30,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_UID = "uid";
     private static final String KEY_CREATED_AT = "created_at";
 
+    // Location table name
+    private static final String TABLE_LOCATION = "location";
+
+    private static final String KEY_LOCATION_ID = "id";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE = "longitude";
+
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -43,6 +50,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
+        String CREATE_LOCATION_TABLE = "CREATE TABLE " + TABLE_LOCATION + "("
+                + KEY_LOCATION_ID + " INTEGER PRIMARY KEY," + KEY_LATITUDE + " TEXT,"
+                + KEY_LONGITUDE + " TEXT" + ")";
+        db.execSQL(CREATE_LOCATION_TABLE);
+
         Log.d(TAG, "Database tables created");
     }
 
@@ -51,6 +63,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
+
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
 
         // Create tables again
         onCreate(db);
@@ -110,6 +125,47 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    /**
+     * Storing location details in database
+     * */
+    public void logLocation(String latitude, String longitude) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_LATITUDE, latitude); // Geografska duzina
+        values.put(KEY_LONGITUDE, longitude); // Geografska sirina
+
+        // Inserting Row
+        long id = db.insert(TABLE_LOCATION, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New location inserted into sqlite: " + id);
+    }
+
+    /**
+     * Getting user data from database
+     * */
+    public HashMap<String, String> getLastLocation() {
+        HashMap<String, String> location = new HashMap<String, String>();
+        String selectQuery = "SELECT  * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 1";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            location.put("latitude", cursor.getString(1));
+            location.put("longitude", cursor.getString(2));
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + location.toString());
+
+        return location;
     }
 
 }
