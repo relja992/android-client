@@ -3,32 +3,45 @@
 package com.example.ljuba.trucks_client.activity;
 
 import com.example.ljuba.trucks_client.R;
+import com.example.ljuba.trucks_client.helper.MapHelper.DirectionFinder;
+import com.example.ljuba.trucks_client.helper.MapHelper.DirectionFinderListener;
+import com.example.ljuba.trucks_client.helper.MapHelper.Route;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MapsActivity extends AppCompatActivity
-        implements
-        OnMyLocationButtonClickListener,
-        OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, DirectionFinderListener{
 
     private GoogleMap mMap;
+    private ProgressDialog progressDialog;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,38 +56,118 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-        mMap.setOnMyLocationButtonClickListener(this);
+        LatLng lokacija = new LatLng(44.801073, 20.521515);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lokacija, 15));
+        originMarkers.add(mMap.addMarker(new MarkerOptions().position(lokacija).title("Neki fiksni marker")));
 
 
-        //dodavanje linija
-        PolylineOptions rectOptions = new PolylineOptions()
-                .add(new LatLng(44.74, 20.48))
-                .add(new LatLng(44.75, 20.49))
-                .add(new LatLng(44.76, 20.50))
-                .add(new LatLng(44.77, 20.51))
-                .add(new LatLng(44.77, 20.52));
 
-        mMap.addPolyline(rectOptions);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        sendRequest();
+    }
 
-        } else if (mMap != null) {
-            mMap.setMyLocationEnabled(true);
+    public void sendRequest(){
+
+        //Umesto ovog ce ici POST request za dobijanje tacaka
+        String origin = "44.801287, 20.521483";
+        String waypoint = "44.794037, 20.526473";
+        String destination = "44.789483, 20.528277";
+
+        try {
+            new DirectionFinder(this, origin,waypoint, destination).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onDirectionFinderStart() {
+        progressDialog = ProgressDialog.show(this, "Molim sacekajte.",
+                "Pronalazenje rute..!", true);
+
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline:polylinePaths ) {
+                polyline.remove();
+            }
         }
     }
 
     @Override
-    public boolean onMyLocationButtonClick() {
-        Toast.makeText(this, "Kliknuto dugme za lokaciju", Toast.LENGTH_SHORT).show();
-        return false;
+    public void onDirectionFinderSuccess(List<Route> routes) {
+        progressDialog.dismiss();
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+
+        for (Route route : routes) {
+            if(route.id != routes.size()-1){
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
+                ((TextView) findViewById(R.id.udaljenost)).append(route.duration.text);
+                ((TextView) findViewById(R.id.trajanje)).append(route.distance.text);
+
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+                        .title(route.startAddress)
+                        .position(route.startLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.BLUE).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(mMap.addPolyline(polylineOptions));
+            } else {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
+                ((TextView) findViewById(R.id.udaljenost)).append(route.duration.text);
+                ((TextView) findViewById(R.id.trajanje)).append(route.distance.text);
+
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+                        .title(route.startAddress)
+                        .position(route.startLocation)));
+
+                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+                        .title(route.endAddress)
+                        .position(route.endLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.BLUE).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(mMap.addPolyline(polylineOptions));
+            }
+        }
     }
-
-
-
-
-
-
-
-
 }
