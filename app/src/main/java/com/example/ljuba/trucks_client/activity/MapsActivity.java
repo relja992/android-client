@@ -85,11 +85,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
         String origin = "44.801287, 20.521483";
-        String waypoint = "44.794037, 20.526473";
-        String destination = "44.789483, 20.528277";
+        String[] waypoints = {"44.8011687, 20.5270794", "44.792045, 20.532508", "44.789483, 20.528277"};
+        String destination = "44.801426, 20.521258";
 
         try {
-            new DirectionFinder(this, origin,waypoint, destination).execute();
+            new DirectionFinder(this, origin, waypoints, destination).execute();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

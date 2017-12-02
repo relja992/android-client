@@ -30,13 +30,13 @@ public class DirectionFinder {
 
     private DirectionFinderListener listener;
     private String origin;
-    private String waypoint;
+    private String[] waypoints;
     private String destination;
 
-    public DirectionFinder(DirectionFinderListener listener, String origin, String waypoint, String destination){
+    public DirectionFinder(DirectionFinderListener listener, String origin, String[] waypoints, String destination){
         this.listener = listener;
         this.origin = origin;
-        this.waypoint = waypoint;
+        this.waypoints = waypoints;
         this.destination = destination;
     }
 
@@ -47,10 +47,17 @@ public class DirectionFinder {
 
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
-        String urlWaypoint = URLEncoder.encode(waypoint, "utf-8");
+        String urlWaypoints = "";
+        for(int i=0; i < waypoints.length; i++){
+            if(i==0)
+                urlWaypoints += URLEncoder.encode(waypoints[i], "utf-8");
+            else
+                urlWaypoints += "|" + URLEncoder.encode(waypoints[i], "utf-8");
+        }
+
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&waypoints=" + urlWaypoint + "&key=" + GOOGLE_API_KEY;
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&waypoints=" + urlWaypoints + "&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
