@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_mapa"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Mapa sa rutama" />
+        <item
+            android:id="@+id/nav_detalji"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Podaci o putnom nalogu" />
+        <item
+            android:id="@+id/nav_opterecenje"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Opterecenje po rutama" />
+        <item
+            android:id="@+id/nav_tran_tacke"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Transportne tacke" />
+        <item
+            android:id="@+id/nav_itinirer"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Itinirer" />
+    </group>
+
+
+
+</menu>

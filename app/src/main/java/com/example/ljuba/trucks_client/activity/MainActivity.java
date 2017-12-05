@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnLogout;
     private Button btnLocation;
     private Button btnOpenMap;
+    private Button btnTabs;
+
 
     private SQLiteHandler db;
     private SessionManager session;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnLocation = (Button) findViewById(R.id.btnLocation);
         btnOpenMap = (Button) findViewById(R.id.btn_open_map);
+        btnTabs = (Button) findViewById(R.id.btn_tabs);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -96,6 +99,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btnTabs.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,NavDraActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
