@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtEmail;
     private Button btnLogout;
     private Button btnLocation;
+    private Button btnLocationStop;
 
     private SQLiteHandler db;
     private SessionManager session;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog pDialog;
 
-    boolean mRequestingLocationUpdates = true;
+    boolean mRequestingLocationUpdates = false;
 
     private LocationCallback mLocationCallback;
 
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnLocation = (Button) findViewById(R.id.btnLocation);
+        btnLocationStop = (Button) findViewById(R.id.btnLocationStop);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -125,7 +127,27 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                sendLocation();
+
+                if (!mRequestingLocationUpdates)
+                    startLocationUpdates();
+                    mRequestingLocationUpdates = true;
+
+            }
+        });
+
+        // Stopiranje uzimanja lokacije i slanja na server
+        btnLocationStop.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                if (mRequestingLocationUpdates){
+                    stopLocationUpdates();
+                    mRequestingLocationUpdates = false;
+                }
+
+                Toast.makeText(getApplicationContext(), "Periodicno slanje prekinuto.", Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -136,15 +158,15 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationResult(LocationResult locationResult) {
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
-                    // ...
 
-                    Double sirina = location.getLatitude();
-                    String ssirina = sirina.toString();
-                    Double duzina = location.getLongitude();
-                    String sduzina = duzina.toString();
+                    Double dSirina = location.getLatitude();
+                    String sirina = dSirina.toString();
+                    Double dDuzina = location.getLongitude();
+                    String duzina = dDuzina.toString();
 
-                    //Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), ssirina + ' ' + sduzina, Toast.LENGTH_LONG).show();
+                    sendLocation(sirina, duzina);
+
+//                    Toast.makeText(getApplicationContext(), sirina + ' ' + duzina, Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -157,6 +179,16 @@ public class MainActivity extends AppCompatActivity {
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
     protected void createLocationRequest() {
@@ -181,65 +213,43 @@ public class MainActivity extends AppCompatActivity {
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
                 null /* Looper */);
+        Toast.makeText(getApplicationContext(), "Periodicno uzimanje lokacije", Toast.LENGTH_LONG).show();
     }
 
     /**
      * Metoda koja implementira slanje sopstvene lokacije na server
      * */
-    private void sendLocation() {
+    private void sendLocation(final String myLatitude, final String myLongitude) {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
+        // Fetching user details from sqlite
+        HashMap<String, String> user = db.getUserDetails();
 
-                            final String sirina = latitude.toString();
-                            final String duzina = longitude.toString();
+        user_id = user.get("uid");
 
-                            // Fetching user details from sqlite
-                            HashMap<String, String> user = db.getUserDetails();
+        //////////////////////////////////////////////////////////////////////////////
+        ///////////////////Koriscenje volley biblioteke///////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////
 
-                            user_id = user.get("uid");
+        // Tag used to cancel the request
+        String tag_string_req = "req_location";
 
-                            //////////////////////////////////////////////////////////////////////////////
-                            ///////////////////Koriscenje volley biblioteke///////////////////////////////
-                            //////////////////////////////////////////////////////////////////////////////
+//        pDialog.setMessage("Sending Location ...");
+//        showDialog();
 
-                            // Tag used to cancel the request
-                            String tag_string_req = "req_location";
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_SEND_LOCATION, new Response.Listener<String>() {
 
-                            pDialog.setMessage("Sending Location ...");
-                            showDialog();
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Sending Location Response: " + response.toString());
+                hideDialog();
 
-                            StringRequest strReq = new StringRequest(Request.Method.POST,
-                                    AppConfig.URL_SEND_LOCATION, new Response.Listener<String>() {
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    if (!error) {
 
-                                @Override
-                                public void onResponse(String response) {
-                                    Log.d(TAG, "Sending Location Response: " + response.toString());
-                                    hideDialog();
-
-                                    try {
-                                        JSONObject jObj = new JSONObject(response);
-                                        boolean error = jObj.getBoolean("error");
-                                        if (!error) {
-
-                                            //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU
+                        //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU
 
 //                                            // User successfully stored in MySQL
 //                                            // Now store the user in sqlite
@@ -253,50 +263,48 @@ public class MainActivity extends AppCompatActivity {
 //                                            // Inserting row in users table
 //                                            db.addUser(name, email, uid, created_at);
 
-                                            Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
-                                        } else {
+                        Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+                    } else {
 
-                                            // Error occurred in sending location. Get the error message
-                                            String errorMsg = jObj.getString("error_msg");
-                                            Toast.makeText(getApplicationContext(),
-                                                    errorMsg, Toast.LENGTH_LONG).show();
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, new Response.ErrorListener() {
-
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Log.e(TAG, "Sending Location Error: " + error.getMessage());
-                                    Toast.makeText(getApplicationContext(),
-                                            error.getMessage(), Toast.LENGTH_LONG).show();
-                                    hideDialog();
-                                }
-                            }) {
-
-                                @Override
-                                protected Map<String, String> getParams() {
-                                    // Posting params to register url
-                                    Map<String, String> params = new HashMap<String, String>();
-
-                                    params.put("user_id", user_id);
-                                    params.put("latitude", sirina);
-                                    params.put("longitude", duzina);
-
-                                    return params;
-                                }
-
-                            };
-
-                            // Adding request to request queue
-                            AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
-
-                        }
+                        // Error occurred in sending location. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                        Toast.makeText(getApplicationContext(),
+                                errorMsg, Toast.LENGTH_LONG).show();
                     }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Sending Location Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put("user_id", user_id);
+                params.put("latitude", myLatitude);
+                params.put("longitude", myLongitude);
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+
     }
+
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared

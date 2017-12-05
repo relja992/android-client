@@ -3,10 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\myDriver\app\app.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\myDriver\app\app.iml" />
       <module fileurl="file://C:\Users\VS-PC\AndroidStudioProjects\truckClient\app\app.iml" filepath="C:\Users\VS-PC\AndroidStudioProjects\truckClient\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/myDriver.iml" filepath="$PROJECT_DIR$/myDriver.iml" />
       <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\trucksclient\truckClient.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\trucksclient\truckClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/trucksclient.iml" filepath="$PROJECT_DIR$/trucksclient.iml" />
       <module fileurl="file://C:\Users\VS-PC\AndroidStudioProjects\truckClient\trucksclient.iml" filepath="C:\Users\VS-PC\AndroidStudioProjects\truckClient\trucksclient.iml" />
+      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\myDriver\trucksclient.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\myDriver\trucksclient.iml" />
     </modules>
   </component>
 </project>
