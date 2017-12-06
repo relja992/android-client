@@ -3,6 +3,7 @@ package com.example.ljuba.trucks_client.activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -21,9 +22,16 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.example.ljuba.trucks_client.R;
+import com.example.ljuba.trucks_client.helper.SQLiteHandler;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 
-public class NavDraActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import java.util.ArrayList;
+import java.util.List;
+
+public class NavDraActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
 
     final Context context = this;
 
@@ -117,9 +125,7 @@ public class NavDraActivity extends AppCompatActivity
                 .setNegativeButton("Odustani",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
-                                stop.setVisibility(View.VISIBLE);
-                                pause.setVisibility(View.VISIBLE);
-                                start.setVisibility(View.INVISIBLE);
+
                                 dialog.cancel();
                             }
                         });
