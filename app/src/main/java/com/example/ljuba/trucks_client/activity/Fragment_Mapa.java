@@ -100,12 +100,6 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 googleMap.getUiSettings().setCompassEnabled(true);
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 googleMap.getUiSettings().setRotateGesturesEnabled(true);
-                LatLng sydney = new LatLng(-34, 151);
-                googleMap.addMarker(new MarkerOptions().position(sydney).
-                        title("Title").snippet("TitleName"));
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition
-                        (cameraPosition ));
             }
         });
         return rootView;

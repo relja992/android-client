@@ -15,14 +15,26 @@
         android:id="@+id/linearLayout">
 
         <Button
-            android:id="@+id/btnLocation"
-            android:layout_width="180dp"
+            android:id="@+id/btn_open_map"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_above="@+id/linearLayout"
-            android:layout_centerHorizontal="true"
             android:background="@color/btn_login"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="30dp"
-            android:text="PRACENJE LOKACIJE"
+            android:text="Pokreni Google Maps"
+            android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/btn_tabs"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:background="@color/btn_login"
+            android:text="Pokreni google map po tabovima"
             android:textColor="@color/white"/>
 
         <TextView
@@ -57,21 +69,6 @@
             android:textSize="15dp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_open_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp"
-        android:text="Pokreni Google Maps" />
 
-    <Button
-        android:id="@+id/btn_tabs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Pokreni google map po tabovima" />
 
 </RelativeLayout>

@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtName;
     private TextView txtEmail;
     private Button btnLogout;
-    private Button btnLocation;
     private Button btnOpenMap;
     private Button btnTabs;
 
@@ -36,9 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private SQLiteHandler db;
     private SessionManager session;
 
-    Double latitude, longitude;
 
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +45,9 @@ public class MainActivity extends AppCompatActivity {
         txtName = (TextView) findViewById(R.id.name);
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
-        btnLocation = (Button) findViewById(R.id.btnLocation);
         btnOpenMap = (Button) findViewById(R.id.btn_open_map);
         btnTabs = (Button) findViewById(R.id.btn_tabs);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // SqLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -69,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         String name = user.get("name");
         String email = user.get("email");
+        final String user_id = user.get("uid");
 
         // Displaying the user details on the screen
         txtName.setText(name);
@@ -83,14 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Pokretanje uzimanja lokacije i slanja na server
-        btnLocation.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                sendLocation();
-            }
-        });
         btnOpenMap.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -105,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,NavDraActivity.class);
+                intent.putExtra(user_id,user_id);
                 startActivity(intent);
             }
         });
@@ -112,35 +102,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    //Metoda koja implementira slanje lokacije na server
-    private void sendLocation() {
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                            txtName.setText(latitude.toString() + " " + longitude.toString());
-                        }
-                    }
-                });
-
-    }
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared
