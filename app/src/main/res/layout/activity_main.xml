@@ -37,6 +37,18 @@
             android:text="Pokreni google map po tabovima"
             android:textColor="@color/white"/>
 
+        <Button
+            android:id="@+id/btn_db"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:background="@color/btn_login"
+            android:text="DB"
+            android:textColor="@color/white"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnLogout;
     private Button btnOpenMap;
     private Button btnTabs;
+    private Button btnDb;
 
 
     private SQLiteHandler db;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnOpenMap = (Button) findViewById(R.id.btn_open_map);
         btnTabs = (Button) findViewById(R.id.btn_tabs);
+        btnDb = (Button) findViewById(R.id.btn_db);
 
 
         // SqLite database handler
@@ -95,6 +97,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,NavDraActivity.class);
                 intent.putExtra(user_id,user_id);
+                startActivity(intent);
+            }
+        });
+
+        btnDb.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,AndroidDatabaseManager.class);
                 startActivity(intent);
             }
         });

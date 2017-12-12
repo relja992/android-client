@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-client.iml" filepath="$PROJECT_DIR$/android-client.iml" />
+      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\android-client.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\android-client.iml" />
       <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\driver-app\android-client.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\driver-app\android-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\driver-app\app\app.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\driver-app\app\app.iml" />
+      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\app\app.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\app\app.iml" />
       <module fileurl="file://F:\2.AndroidWorkspace\Truck_Klijent\android-client\app\app.iml" filepath="F:\2.AndroidWorkspace\Truck_Klijent\android-client\app\app.iml" />
       <module fileurl="file://F:\2.AndroidWorkspace\android-client\driver-app.iml" filepath="F:\2.AndroidWorkspace\android-client\driver-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/periodicnoSlanje.iml" filepath="$PROJECT_DIR$/periodicnoSlanje.iml" />
       <module fileurl="file://F:\2.AndroidWorkspace\Truck_Klijent\android-client\trucksclient.iml" filepath="F:\2.AndroidWorkspace\Truck_Klijent\android-client\trucksclient.iml" />
     </modules>
   </component>

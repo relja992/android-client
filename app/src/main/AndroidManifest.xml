@@ -45,6 +45,9 @@
             android:name=".activity.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
+            android:name=".activity.AndroidDatabaseManager"
+            android:label="@string/title_activity_maps" />
+        <activity
             android:name=".activity.NavDraActivity"
             android:label="@string/title_activity_nav_dra"
             android:theme="@style/AppTheme.NoActionBar"></activity>
