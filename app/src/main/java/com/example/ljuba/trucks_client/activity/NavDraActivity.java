@@ -333,6 +333,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 //
 //                                            // Inserting row in users table
 //                                            db.addUser(name, email, uid, created_at);
+                        db.logLocation(myLatitude, myLongitude, 1, 1, 1);
 
                         Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
                     } else {
@@ -352,6 +353,8 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                 Toast.makeText(getApplicationContext(),
                      error.getMessage(), Toast.LENGTH_LONG).show();
                 //hideDialog();
+
+                db.logLocation(myLatitude, myLongitude, 1, 1, 0);
 
             }
         }) {

@@ -39,6 +39,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_LOCATION_ID = "id";
     private static final String KEY_LATITUDE = "latitude";
     private static final String KEY_LONGITUDE = "longitude";
+    private static final String KEY_TRAVEL_ORDER_ID = "travel_order_id";
+    private static final String KEY_DRIVER_ID = "driver_id";
+    private static final String KEY_SUCCESSFULLY_SENT_TO_SERVER= "successfully";
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -55,7 +58,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         String CREATE_LOCATION_TABLE = "CREATE TABLE " + TABLE_LOCATION + "("
                 + KEY_LOCATION_ID + " INTEGER PRIMARY KEY," + KEY_LATITUDE + " TEXT,"
-                + KEY_LONGITUDE + " TEXT" + ")";
+                + KEY_LONGITUDE + " TEXT," + KEY_TRAVEL_ORDER_ID + " INTEGER,"
+                + KEY_DRIVER_ID + " INTEGER," + KEY_SUCCESSFULLY_SENT_TO_SERVER + " INTEGER" + ")";
         db.execSQL(CREATE_LOCATION_TABLE);
 
         Log.d(TAG, "Database tables created");
@@ -134,12 +138,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing location details in database
      * */
-    public void logLocation(String latitude, String longitude) {
+    public void logLocation(String latitude, String longitude, int travelOrderID, int driverID, int successfully) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_LATITUDE, latitude); // Geografska duzina
         values.put(KEY_LONGITUDE, longitude); // Geografska sirina
+        values.put(KEY_TRAVEL_ORDER_ID, travelOrderID); // ID putnog naloga
+        values.put(KEY_DRIVER_ID, driverID); // ID vozaca
+        values.put(KEY_SUCCESSFULLY_SENT_TO_SERVER, successfully); // Uspesnot 1/0 (ok/not ok)
 
         // Inserting Row
         long id = db.insert(TABLE_LOCATION, null, values);
@@ -162,6 +169,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         if (cursor.getCount() > 0) {
             location.put("latitude", cursor.getString(1));
             location.put("longitude", cursor.getString(2));
+            location.put("travelOrderID", cursor.getString(3));
+            location.put("driverID", cursor.getString(4));
+            location.put("successfully", cursor.getString(5));
         }
         cursor.close();
         db.close();

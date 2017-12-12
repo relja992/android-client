@@ -118,7 +118,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Double originLon = location.getLongitude();
 
                             // Inserting row in users table
-                            db.logLocation(originLat.toString(), originLon.toString());
+                            db.logLocation(originLat.toString(), originLon.toString(), 1, 1, 1);
 
                         }
                     }
