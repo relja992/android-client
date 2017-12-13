@@ -177,39 +177,12 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
         }
     }
 
+    //Slanje zahteva za pronalazenje najkrace rute k google api
     public void sendRequest() {
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
         String[] waypoints = {"44.806255, 20.522842", "44.792045, 20.532508", "44.789483, 20.528277"};
         String destination = "44.796566, 20.522016";
-
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        mFusedLocationClient.getLastLocation()
-//                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-//
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        // Got last known location. In some rare situations this can be null.
-//                        if (location != null) {
-//
-//                            Double originLat = location.getLatitude();
-//                            Double originLon = location.getLongitude();
-//
-//                            // Inserting row in users table
-//                            //db.logLocation(originLat.toString(), originLon.toString(),1,1,1);
-//
-//                        }
-//                    }
-//                });
 
         // Fetching user details from sqlite
         HashMap<String, String> location = db.getLastLocation();
