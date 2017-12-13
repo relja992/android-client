@@ -1,7 +1,11 @@
 package com.example.ljuba.trucks_client.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +14,9 @@ import android.widget.TextView;
 import com.example.ljuba.trucks_client.R;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashMap;
 
@@ -27,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private SQLiteHandler db;
     private SessionManager session;
 
-
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,36 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+
+                            Double originLat = location.getLatitude();
+                            Double originLon = location.getLongitude();
+
+                            // Inserting row in location table
+                            db.logLocation(originLat.toString(), originLon.toString(),1,1,1);
+
+                        }
+                    }
+                });
 
     }
 

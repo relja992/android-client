@@ -107,7 +107,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     Double dDuzina = location.getLongitude();
                     String duzina = dDuzina.toString();
 
-                    sendLocation(duzina, sirina);
+                    sendLocationRecoursive(duzina, sirina);
 
 //                   Toast.makeText(getApplicationContext(), sirina + ' ' + duzina, Toast.LENGTH_LONG).show();
                 }
@@ -147,7 +147,6 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                 prikaziDialog();
             }
         });
-
 
     }
     public void prikaziDialog(){
@@ -296,10 +295,11 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
     /**
      * Metoda koja implementira slanje sopstvene lokacije na server
      * */
-    private void sendLocation(final String myLatitude, final String myLongitude) {
+    private void sendLocationRecoursive(final String myLatitude, final String myLongitude) {
 
         HashMap<String, String> user = db.getUserDetails();
         my_user_id = user.get("uid");
+
         //////////////////////////////////////////////////////////////////////////////
         ///////////////////Koriscenje volley biblioteke///////////////////////////////
         //////////////////////////////////////////////////////////////////////////////
@@ -312,6 +312,8 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
             @Override
             public void onResponse(String response) {
+                int counter;
+
                 Log.d(TAG, "Sending Location Response: " + response.toString());
                // hideDialog();
 
@@ -320,22 +322,25 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     boolean error = jObj.getBoolean("error");
                     if (!error) {
 
-                        //OVDE CE DA IDE UPISIVANJE U LOKALNU SQLite BAZU
-
-//                                            // User successfully stored in MySQL
-//                                            // Now store the user in sqlite
-//                                            String uid = jObj.getString("uid");
-//
-//                                            JSONObject user = jObj.getJSONObject("user");
-//                                            String name = user.getString("name");
-//                                            String email = user.getString("email");
-//                                            String created_at = user.getString("created_at");
-//
-//                                            // Inserting row in users table
-//                                            db.addUser(name, email, uid, created_at);
+                        //Logovanje uspesno poslate lokacije u SQLite bazu podataka
                         db.logLocation(myLatitude, myLongitude, 1, 1, 1);
 
                         Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+
+                        counter = db.countUnsentLocations();
+
+                        if(counter > 0){
+                            List<String[]> locations = new ArrayList();
+                            locations = db.getUnsentLocations();
+
+                            for (String[] location : locations)
+                            {
+                                sendLocation(location[1], location[2]);
+                                db.setLocationSent(location);
+                            }
+
+                        }
+
                     } else {
 
                         // Error occurred in sending location. Get the error message
@@ -352,6 +357,78 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                 Log.e(TAG, "Sending Location Error: " + error.getMessage());
                 Toast.makeText(getApplicationContext(),
                      error.getMessage(), Toast.LENGTH_LONG).show();
+                //hideDialog();
+
+                db.logLocation(myLatitude, myLongitude, 1, 1, 0);
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting params to register url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("user_id", my_user_id);
+                params.put("latitude", myLatitude);
+                params.put("longitude", myLongitude);
+                return params;
+            }
+        };
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+    /**
+     * Metoda koja implementira slanje sopstvene lokacije na server
+     * */
+    private void sendLocation(final String myLatitude, final String myLongitude) {
+
+        HashMap<String, String> user = db.getUserDetails();
+        my_user_id = user.get("uid");
+
+        //////////////////////////////////////////////////////////////////////////////
+        ///////////////////Koriscenje volley biblioteke///////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////
+
+        // Tag used to cancel the request
+        String tag_string_req = "req_location";
+
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_SEND_LOCATION, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                int counter;
+
+                Log.d(TAG, "Sending Location Response: " + response.toString());
+                // hideDialog();
+
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    if (!error) {
+
+                        //Logovanje uspesno poslate lokacije u SQLite bazu podataka
+                        db.logLocation(myLatitude, myLongitude, 1, 1, 1);
+
+                        Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+
+                    } else {
+
+                        // Error occurred in sending location. Get the error message
+                        String errorMsg = jObj.getString("error_msg");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Sending Location Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
                 //hideDialog();
 
                 db.logLocation(myLatitude, myLongitude, 1, 1, 0);
