@@ -1,36 +1,27 @@
 package com.example.ljuba.trucks_client.activity;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.ljuba.trucks_client.R;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.HashMap;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView txtName;
     private TextView txtEmail;
     private Button btnLogout;
-    private Button btnOpenMap;
+    //private Button btnOpenMap;
     private Button btnTabs;
     private Button btnDb;
+    private Button btnListView;
 
 
     private SQLiteHandler db;
@@ -46,9 +37,10 @@ public class MainActivity extends AppCompatActivity {
         txtName = (TextView) findViewById(R.id.name);
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
-        btnOpenMap = (Button) findViewById(R.id.btn_open_map);
+        //btnOpenMap = (Button) findViewById(R.id.btn_open_map);
         btnTabs = (Button) findViewById(R.id.btn_tabs);
         btnDb = (Button) findViewById(R.id.btn_db);
+        btnListView = (Button) findViewById(R.id.btn_list_view);
 
 
         // SqLite database handler
@@ -82,14 +74,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        btnOpenMap.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
-                startActivity(intent);
-            }
-        });
+//        btnOpenMap.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         btnTabs.setOnClickListener(new View.OnClickListener() {
 
@@ -106,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,AndroidDatabaseManager.class);
+                startActivity(intent);
+            }
+        });
+        btnListView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ListViewActivity.class);
                 startActivity(intent);
             }
         });

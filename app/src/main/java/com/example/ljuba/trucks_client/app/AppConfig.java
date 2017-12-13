@@ -10,4 +10,7 @@ public class AppConfig {
 
     // Server send user location
     public static String URL_SEND_LOCATION = "http://trucks-server.rimteam.com/users/location";
+
+    //url testiranje prikaza putnih naloga
+    public static final String URL_TEST_LISTVIEW = "https://api.androidhive.info/json/movies.json";
 }

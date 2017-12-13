@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp" >
+
+
+    <TextView
+        android:id="@+id/broj_pn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/vozac"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/broj_pn"
+        android:layout_marginTop="5dp"
+       />
+
+    <TextView
+        android:id="@+id/vozilo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/vozac"
+        android:layout_marginTop="5dp"
+        />
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/vozilo"
+        android:layout_marginTop="5dp"
+        />
+
+</RelativeLayout>
