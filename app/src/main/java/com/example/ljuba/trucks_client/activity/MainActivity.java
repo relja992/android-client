@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                             Double originLat = location.getLatitude();
                             Double originLon = location.getLongitude();
 
-                            // Inserting row in users table
+                            // Inserting row in location table
                             db.logLocation(originLat.toString(), originLon.toString(),1,1,1);
 
                         }

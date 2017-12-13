@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
 
@@ -160,7 +161,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      * */
     public HashMap<String, String> getLastLocation() {
         HashMap<String, String> location = new HashMap<String, String>();
-        String selectQuery = "SELECT  * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 1";
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 1";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -179,6 +180,72 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Fetching user from Sqlite: " + location.toString());
 
         return location;
+    }
+
+    public List getUnsentLocations() {
+        ArrayList<String[]> neposlateLokacije = new ArrayList();
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE successfully = 0";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+
+        while (cursor.isAfterLast() == false){
+
+            String[] lokacija = new String[5];
+
+            lokacija[0] = cursor.getString(0);
+            lokacija[1] = cursor.getString(1);
+            lokacija[2] = cursor.getString(2);
+            lokacija[3] = cursor.getString(3);
+            lokacija[4] = cursor.getString(4);
+
+            neposlateLokacije.add(lokacija);
+
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        db.close();
+
+        // return lokacije
+        Log.d(TAG, "Fetching locations from Sqlite: " + neposlateLokacije.toString());
+
+        return neposlateLokacije;
+    }
+
+    public void setLocationSent(String[] location) {
+
+        String selectQuery = "UPDATE " + TABLE_LOCATION + " SET successfully = 1 WHERE " + location[0];
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Move to first row
+        cursor.moveToFirst();
+        cursor.close();
+        db.close();
+
+        // return user
+        Log.d(TAG, "Setting to sent unsent location with id from Sqlite: " + location[0]);
+    }
+
+    public int countUnsentLocations() {
+        int counter = 0;
+        String selectQuery = "SELECT count(*) FROM " + TABLE_LOCATION + " WHERE successfully = 0";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        counter = cursor.getInt(0);
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching number of unsent locations from Sqlite: " + counter);
+
+        return counter;
     }
 
     public ArrayList<Cursor> getData(String Query){
