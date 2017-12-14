@@ -80,16 +80,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-//        btnOpenMap.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this,MapsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
         btnTabs.setOnClickListener(new View.OnClickListener() {
 
             @Override
