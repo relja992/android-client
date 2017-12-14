@@ -2,6 +2,7 @@ package com.example.ljuba.trucks_client.activity;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -114,9 +116,11 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-       // String text = String.valueOf(adapterView.getItemAtPosition(i));
-        Toast.makeText(getApplicationContext(), "Pozicija " +i, Toast.LENGTH_LONG)
-                .show();
+        //uzimanje vrednosti broj_pn jer ce trebati na sledecoj za ucitavanje detalja naloga
+        String broj_putnog_naloga = ((TextView) view.findViewById(R.id.broj_pn)).getText().toString();
+       // Toast.makeText(getApplicationContext(), broj_putnog_naloga +i, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(ListViewActivity.this,NavDraActivity.class);
+        intent.putExtra("broj_pn",broj_putnog_naloga);
+        startActivity(intent);
     }
 }
