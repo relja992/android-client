@@ -80,6 +80,11 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //ucitavanje podataka iz intenta  neophodnih za ucitavanje detalja putnog naloga
+        Intent intent = getIntent();
+        String broj_pn = intent.getStringExtra("broj_pn");
+        Toast.makeText(getApplicationContext(), broj_pn , Toast.LENGTH_SHORT).show();
+
         start = (FloatingActionButton) findViewById(R.id.start);
         stop = (FloatingActionButton) findViewById(R.id.stop);
         pause = (FloatingActionButton) findViewById(R.id.pause);
@@ -449,4 +454,6 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
+
+
 }
