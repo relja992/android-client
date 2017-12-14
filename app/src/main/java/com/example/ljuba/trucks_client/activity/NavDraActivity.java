@@ -107,9 +107,8 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     Double dDuzina = location.getLongitude();
                     String duzina = dDuzina.toString();
 
-                    sendLocationRecoursive(duzina, sirina);
+                    sendLocationRecursive(duzina, sirina);
 
-//                   Toast.makeText(getApplicationContext(), sirina + ' ' + duzina, Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -131,6 +130,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
             }
         });
+
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,6 +139,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                 prikaziDialog();
             }
         });
+
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -196,9 +197,6 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         // show it
         alertDialog.show();
 
-
-
-
     }
 
     @Override
@@ -217,6 +215,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         getMenuInflater().inflate(R.menu.nav_dra, menu);
         return true;
     }
+
     private void displaySelectedScreen(int id){
         Fragment fragment = null;
         switch (id){
@@ -247,6 +246,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -293,9 +293,9 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
     }
 
     /**
-     * Metoda koja implementira slanje sopstvene lokacije na server
+     * Metoda koja implementira slanje sopstvene lokacije na server uz proveru da li postoje neposlate lokacije i njihovo slanje
      * */
-    private void sendLocationRecoursive(final String myLatitude, final String myLongitude) {
+    private void sendLocationRecursive(final String myLatitude, final String myLongitude) {
 
         HashMap<String, String> user = db.getUserDetails();
         my_user_id = user.get("uid");
@@ -313,6 +313,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
             @Override
             public void onResponse(String response) {
                 int counter;
+                long id;
 
                 Log.d(TAG, "Sending Location Response: " + response.toString());
                // hideDialog();
@@ -323,9 +324,9 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     if (!error) {
 
                         //Logovanje uspesno poslate lokacije u SQLite bazu podataka
-                        db.logLocation(myLatitude, myLongitude, 1, 1, 1);
+                        id = db.logLocation(myLatitude, myLongitude, 1, 1, 1);
 
-                        Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Lokacija sa ID-jem " + id + " poslata", Toast.LENGTH_LONG).show();
 
                         counter = db.countUnsentLocations();
 
@@ -335,7 +336,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
                             for (String[] location : locations)
                             {
-                                sendLocation(location[1], location[2]);
+                                sendLocation(location[0], location[1], location[2]);
                                 db.setLocationSent(location);
                             }
 
@@ -355,8 +356,9 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Sending Location Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                     error.getMessage(), Toast.LENGTH_LONG).show();
+
+                //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Greska prilikom slanja lokacije", Toast.LENGTH_LONG).show();
                 //hideDialog();
 
                 db.logLocation(myLatitude, myLongitude, 1, 1, 0);
@@ -381,7 +383,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
     /**
      * Metoda koja implementira slanje sopstvene lokacije na server
      * */
-    private void sendLocation(final String myLatitude, final String myLongitude) {
+    private void sendLocation(final String id, final String myLatitude, final String myLongitude) {
 
         HashMap<String, String> user = db.getUserDetails();
         my_user_id = user.get("uid");
@@ -398,7 +400,6 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
             @Override
             public void onResponse(String response) {
-                int counter;
 
                 Log.d(TAG, "Sending Location Response: " + response.toString());
                 // hideDialog();
@@ -408,10 +409,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     boolean error = jObj.getBoolean("error");
                     if (!error) {
 
-                        //Logovanje uspesno poslate lokacije u SQLite bazu podataka
-                        db.logLocation(myLatitude, myLongitude, 1, 1, 1);
-
-                        Toast.makeText(getApplicationContext(), "Uspesno poslata lokacija na server.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Lokacija sa ID-jem " + id + " poslata", Toast.LENGTH_LONG).show();
 
                     } else {
 
@@ -427,8 +425,8 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "Sending Location Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Greska prilikom slanja lokacije", Toast.LENGTH_LONG).show();
                 //hideDialog();
 
                 db.logLocation(myLatitude, myLongitude, 1, 1, 0);

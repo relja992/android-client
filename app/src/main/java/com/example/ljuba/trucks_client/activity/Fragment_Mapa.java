@@ -181,12 +181,13 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
     public void sendRequest() {
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
+        String origin = "44.801264, 20.521455";
         String[] waypoints = {"44.806255, 20.522842", "44.792045, 20.532508", "44.789483, 20.528277"};
         String destination = "44.796566, 20.522016";
 
         // Fetching user details from sqlite
-        HashMap<String, String> location = db.getLastLocation();
-        String origin = location.get("latitude") + ", " + location.get("longitude");
+//        HashMap<String, String> location = db.getLastLocation();
+//        String origin = location.get("latitude") + ", " + location.get("longitude");
 
         try {
             new DirectionFinder(this, origin, waypoints, destination).execute();

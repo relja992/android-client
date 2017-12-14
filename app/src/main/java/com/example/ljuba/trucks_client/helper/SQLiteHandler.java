@@ -139,7 +139,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing location details in database
      * */
-    public void logLocation(String latitude, String longitude, int travelOrderID, int driverID, int successfully) {
+    public long logLocation(String latitude, String longitude, int travelOrderID, int driverID, int successfully) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -154,6 +154,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
 
         Log.d(TAG, "New location inserted into sqlite: " + id);
+
+        return id;
     }
 
     /**
