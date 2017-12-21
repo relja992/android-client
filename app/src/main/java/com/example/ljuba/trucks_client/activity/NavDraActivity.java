@@ -35,6 +35,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.ljuba.trucks_client.R;
 import com.example.ljuba.trucks_client.app.AppConfig;
 import com.example.ljuba.trucks_client.app.AppController;
+import com.example.ljuba.trucks_client.helper.MapHelper.DirectionFinder;
+import com.example.ljuba.trucks_client.helper.MapHelper.DirectionFinderListener;
+import com.example.ljuba.trucks_client.helper.MapHelper.Route;
 import com.example.ljuba.trucks_client.helper.SQLiteHandler;
 import com.example.ljuba.trucks_client.helper.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -48,12 +51,13 @@ import com.google.android.gms.maps.model.Polyline;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NavDraActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class NavDraActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DirectionFinderListener {
 
     private static final String TAG = NavDraActivity.class.getSimpleName();
     String my_user_id;
@@ -90,6 +94,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         pause = (FloatingActionButton) findViewById(R.id.pause);
 
         db = new SQLiteHandler(getApplicationContext());
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -112,7 +117,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
                     Double dDuzina = location.getLongitude();
                     String duzina = dDuzina.toString();
 
-                    sendLocationRecursive(duzina, sirina);
+                    sendLocationRecoursive(duzina, sirina);
 
                 }
             }
@@ -121,18 +126,16 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Snackbar.make(view, "Izvrsavanje putnog naloga", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 start.setVisibility(View.INVISIBLE);
-                stop.setVisibility(View.VISIBLE);
+                //stop.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.VISIBLE);
 
                 if (!mRequestingLocationUpdates)
                     startLocationUpdates();
                 mRequestingLocationUpdates = true;
-
             }
         });
 
@@ -221,37 +224,6 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         return true;
     }
 
-    private void displaySelectedScreen(int id){
-        Fragment fragment = null;
-        switch (id){
-            case R.id.nav_mapa:
-                fragment = new Fragment_Mapa();
-                break;
-            case R.id.nav_detalji:
-                fragment = new Fragment_Podaci();
-                break;
-            case R.id.nav_opterecenje:
-                fragment = new Fragment_Opterecenje();
-                break;
-            case R.id.nav_tran_tacke:
-                fragment = new Fragment_TransportneTacke();
-                break;
-            case R.id.nav_itinirer:
-                fragment = new Fragment_Itinirer();
-                break;
-        }
-
-        if (fragment!=null){
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.content_main,fragment);
-            ft.commit();
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-
-
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -274,6 +246,37 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         int id = item.getItemId();
         displaySelectedScreen(id);
         return true;
+    }
+
+    private void displaySelectedScreen(int id){
+        Fragment fragment = null;
+        switch (id){
+            case R.id.nav_mapa:
+                fragment = new Fragment_Mapa();
+                break;
+            case R.id.nav_detalji:
+                fragment = new Fragment_Podaci();
+                break;
+            case R.id.nav_opterecenje:
+                fragment = new Fragment_Opterecenje();
+                break;
+            case R.id.nav_tran_tacke:
+                fragment = new Fragment_TransportneTacke();
+                break;
+            case R.id.nav_itinirer:
+                fragment = new Fragment_Itinirer();
+                break;
+        }
+
+        if (fragment!=null){
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.content_main, fragment);
+            ft.commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
     }
 
     private void stopLocationUpdates() {
@@ -300,7 +303,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
     /**
      * Metoda koja implementira slanje sopstvene lokacije na server uz proveru da li postoje neposlate lokacije i njihovo slanje
      * */
-    private void sendLocationRecursive(final String myLatitude, final String myLongitude) {
+    private void sendLocationRecoursive(final String myLatitude, final String myLongitude) {
 
         HashMap<String, String> user = db.getUserDetails();
         my_user_id = user.get("uid");
@@ -330,6 +333,18 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
                         //Logovanje uspesno poslate lokacije u SQLite bazu podataka
                         id = db.logLocation(myLatitude, myLongitude, 1, 1, 1);
+
+//                        //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
+//                        HashMap<String, String> lastLocation = db.getPreviousLocation(id-1);
+//                        String origin = lastLocation.get("latitude") + ", " + lastLocation.get("longitude");
+//                        //String[] waypoints = {"44.806255, 20.522842", "44.792045, 20.532508", "44.789483, 20.528277"};
+//                        String destination = "44.796566, 20.522016";
+//
+//                        try {
+//                            new DirectionFinder(this, origin, destination).execute();
+//                        } catch (UnsupportedEncodingException e) {
+//                            e.printStackTrace();
+//                        }
 
                         Toast.makeText(getApplicationContext(), "Lokacija sa ID-jem " + id + " poslata", Toast.LENGTH_LONG).show();
 
@@ -454,4 +469,13 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
     }
 
 
+    @Override
+    public void onDirectionFinderStart() {
+
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> route) {
+
+    }
 }

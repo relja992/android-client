@@ -184,6 +184,32 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return location;
     }
 
+    /**
+     * Getting user data from database
+     * */
+    public HashMap<String, String> getPreviousLocation(long id) {
+        HashMap<String, String> location = new HashMap<String, String>();
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE id = " + id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            location.put("latitude", cursor.getString(1));
+            location.put("longitude", cursor.getString(2));
+            location.put("travelOrderID", cursor.getString(3));
+            location.put("driverID", cursor.getString(4));
+            location.put("successfully", cursor.getString(5));
+        }
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + location.toString());
+
+        return location;
+    }
+
     public List getUnsentLocations() {
         ArrayList<String[]> neposlateLokacije = new ArrayList();
         String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE successfully = 0";

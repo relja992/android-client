@@ -16,6 +16,7 @@ import java.util.List;
  */
 
 public class PNListAdapter extends BaseAdapter {
+
     private Activity activity;
     private LayoutInflater inflater;
     private List<PutniNalog> putniNalozi;

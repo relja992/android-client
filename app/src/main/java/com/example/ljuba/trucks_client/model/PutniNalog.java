@@ -7,6 +7,7 @@ import java.util.Date;
  */
 
 public class PutniNalog {
+
     private String brojPN;
     private String vozac;
     private String vozilo;

@@ -59,16 +59,14 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
 
     private SQLiteHandler db;
 
-
-
-
     MapView mMapView;
     private GoogleMap googleMap;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle  savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle  savedInstanceState){
+
         View rootView = inflater.inflate(R.layout.fragment_mapa, container, false);
+
         mMapView= (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
@@ -102,6 +100,7 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 googleMap.getUiSettings().setRotateGesturesEnabled(true);
             }
         });
+
         return rootView;
     }
 
@@ -177,7 +176,7 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
         }
     }
 
-    //Slanje zahteva za pronalazenje najkrace rute k google api
+    //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
     public void sendRequest() {
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
