@@ -42,11 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by BobanMihailov on 5.12.2017..
- */
-
 public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
+
     private ProgressDialog progressDialog;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
@@ -93,7 +90,8 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                         googleMap.setMyLocationEnabled(true);
                     }
                 }
-                sendRequest();
+
+                sendRequestForRoute();
 
                 googleMap.getUiSettings().setCompassEnabled(true);
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -177,7 +175,7 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
     }
 
     //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
-    public void sendRequest() {
+    public void sendRequestForRoute() {
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
         String origin = "44.801264, 20.521455";
@@ -190,6 +188,21 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
 
         try {
             new DirectionFinder(this, origin, waypoints, destination).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
+    public void sendRequestForRoutePeriodically(String sirina, String duzina) {
+
+        HashMap<String, String> lastLocation = db.getLocationForOrigin();
+        String origin = lastLocation.get("latitude") + ", " + lastLocation.get("longitude");
+        String destination = sirina + ", " + duzina;
+
+        try {
+            new DirectionFinder(this, origin, destination).executeWithoutWaypoints();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -218,6 +231,30 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 polyline.remove();
             }
         }
+    }
+
+    @Override
+    public void onDirectionFinderStartWithoutCleaning() {
+        progressDialog = ProgressDialog.show(getActivity(), "Molim sacekajte.",
+                "Pronalazenje rute..!", true);
+
+//        if (originMarkers != null) {
+//            for (Marker marker : originMarkers) {
+//                marker.remove();
+//            }
+//        }
+//
+//        if (destinationMarkers != null) {
+//            for (Marker marker : destinationMarkers) {
+//                marker.remove();
+//            }
+//        }
+//
+//        if (polylinePaths != null) {
+//            for (Polyline polyline:polylinePaths ) {
+//                polyline.remove();
+//            }
+//        }
     }
 
     @Override
@@ -310,6 +347,116 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
                         color(Color.BLUE).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(googleMap.addPolyline(polylineOptions));
+            }
+        }
+
+        DecimalFormat df = new DecimalFormat("#.00");
+        String udaljenost = df.format(distance/1000) + " km";
+
+        int minutes = duration/60;
+        int seconds = duration%60;
+        String trajanje = minutes + " m " + seconds + " s";
+
+        //((TextView) getActivity().findViewById(R.id.udaljenost_fragment)).append(udaljenost);
+        //((TextView) getActivity().findViewById(R.id.trajanje_fragment)).append(trajanje);
+    }
+
+    @Override
+    public void onDirectionFinderSuccessWithoutCleaning(List<Route> routes) {
+        progressDialog.dismiss();
+        polylinePaths = new ArrayList<>();
+        originMarkers = new ArrayList<>();
+        destinationMarkers = new ArrayList<>();
+
+        for (Route route : routes) {
+            if(route.id == 0){
+
+                duration += route.duration.value;
+                distance += route.distance.value;
+
+                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+//                        .title(route.startAddress)
+                        .title("Trenutna lokacija")
+                        .position(route.startLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.RED).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(googleMap.addPolyline(polylineOptions));
+            }else if(route.id == 1){
+
+                duration += route.duration.value;
+                distance += route.distance.value;
+
+                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+//                        .title(route.startAddress)
+                        .title("Mesto za utovar robe")
+                        .position(route.startLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.RED).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(googleMap.addPolyline(polylineOptions));
+            }else if(route.id != routes.size()-1){
+
+                duration += route.duration.value;
+                distance += route.distance.value;
+
+                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+//                        .title(route.startAddress)
+                        .title("Stanica za istovar robe " + (route.id - 1))
+                        .position(route.startLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.RED).
+                        width(10);
+
+                for (int i = 0; i < route.points.size(); i++)
+                    polylineOptions.add(route.points.get(i));
+
+                polylinePaths.add(googleMap.addPolyline(polylineOptions));
+            } else {
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 14));
+
+                duration += route.duration.value;
+                distance += route.distance.value;
+
+                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+//                        .title(route.startAddress)
+                        .title("Stanica za istovar robe " + (route.id - 1))
+                        .position(route.startLocation)));
+
+                destinationMarkers.add(googleMap.addMarker(new MarkerOptions()
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+//                        .title(route.endAddress)
+                        .title("Krajnja destinacija")
+                        .position(route.endLocation)));
+
+                PolylineOptions polylineOptions = new PolylineOptions().
+                        geodesic(true).
+                        color(Color.RED).
                         width(10);
 
                 for (int i = 0; i < route.points.size(); i++)

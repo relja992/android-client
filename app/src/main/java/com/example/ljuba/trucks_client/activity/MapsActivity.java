@@ -269,4 +269,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ((TextView) findViewById(R.id.udaljenost)).append(udaljenost);
         ((TextView) findViewById(R.id.trajanje)).append(trajanje);
     }
+
+    @Override
+    public void onDirectionFinderStartWithoutCleaning() {
+
+    }
+
+    @Override
+    public void onDirectionFinderSuccessWithoutCleaning(List<Route> route) {
+
+    }
 }

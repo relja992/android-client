@@ -187,14 +187,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Getting user data from database
      * */
-    public HashMap<String, String> getPreviousLocation(long id) {
+    public HashMap<String, String> getLocationForOrigin() {
         HashMap<String, String> location = new HashMap<String, String>();
-        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE id = " + id;
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 2";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         // Move to first row
         cursor.moveToFirst();
+        cursor.moveToNext();
         if (cursor.getCount() > 0) {
             location.put("latitude", cursor.getString(1));
             location.put("longitude", cursor.getString(2));

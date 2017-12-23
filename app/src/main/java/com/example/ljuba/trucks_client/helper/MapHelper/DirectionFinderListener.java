@@ -11,4 +11,6 @@ public interface DirectionFinderListener {
     void onDirectionFinderStart();
     void onDirectionFinderSuccess(List<Route> route);
 
+    void onDirectionFinderStartWithoutCleaning();
+    void onDirectionFinderSuccessWithoutCleaning(List<Route> route);
 }
