@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -123,7 +125,7 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
 
                     if(db.countUnsentLocations() > 0){
                         //Ne salje se zahtev za dobijanje rute jer ima neposlatih lokacija i ruta ne bi bila dobra
-                    }else if (db.countUnusedLocationsForRoute() > 0){
+                    }else if (db.countUnusedLocationsForRoute() > 0 && isNetworkAvailable()){
                         fragment.sendRequestForRealRoute(sirina, duzina);
                     }
 
@@ -494,4 +496,12 @@ public class NavDraActivity extends AppCompatActivity implements NavigationView.
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 }

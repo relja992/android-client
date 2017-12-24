@@ -396,11 +396,11 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 duration += route.duration.value;
                 distance += route.distance.value;
 
-                originMarkers.add(googleMap.addMarker(new MarkerOptions()
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-//                        .title(route.startAddress)
-                        .title("Trenutna lokacija")
-                        .position(route.startLocation)));
+//                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+//                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+////                        .title(route.startAddress)
+//                        .title("Trenutna lokacija")
+//                        .position(route.startLocation)));
 
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
@@ -416,11 +416,11 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 duration += route.duration.value;
                 distance += route.distance.value;
 
-                originMarkers.add(googleMap.addMarker(new MarkerOptions()
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-//                        .title(route.startAddress)
-                        .title("Mesto za utovar robe")
-                        .position(route.startLocation)));
+//                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+//                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+////                        .title(route.startAddress)
+//                        .title("Mesto za utovar robe")
+//                        .position(route.startLocation)));
 
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
@@ -436,11 +436,11 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 duration += route.duration.value;
                 distance += route.distance.value;
 
-                originMarkers.add(googleMap.addMarker(new MarkerOptions()
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-//                        .title(route.startAddress)
-                        .title("Stanica za istovar robe " + (route.id - 1))
-                        .position(route.startLocation)));
+//                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+//                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+////                        .title(route.startAddress)
+//                        .title("Stanica za istovar robe " + (route.id - 1))
+//                        .position(route.startLocation)));
 
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
@@ -458,17 +458,17 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                 duration += route.duration.value;
                 distance += route.distance.value;
 
-                originMarkers.add(googleMap.addMarker(new MarkerOptions()
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-//                        .title(route.startAddress)
-                        .title("Stanica za istovar robe " + (route.id - 1))
-                        .position(route.startLocation)));
+//                originMarkers.add(googleMap.addMarker(new MarkerOptions()
+//                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
+////                        .title(route.startAddress)
+//                        .title("Stanica za istovar robe " + (route.id - 1))
+//                        .position(route.startLocation)));
 
-                destinationMarkers.add(googleMap.addMarker(new MarkerOptions()
-                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
-//                        .title(route.endAddress)
-                        .title("Krajnja destinacija")
-                        .position(route.endLocation)));
+//                destinationMarkers.add(googleMap.addMarker(new MarkerOptions()
+//                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.end_green))
+////                        .title(route.endAddress)
+//                        .title("Krajnja destinacija")
+//                        .position(route.endLocation)));
 
                 PolylineOptions polylineOptions = new PolylineOptions().
                         geodesic(true).
