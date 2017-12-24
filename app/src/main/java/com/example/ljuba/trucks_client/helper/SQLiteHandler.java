@@ -42,7 +42,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_LONGITUDE = "longitude";
     private static final String KEY_TRAVEL_ORDER_ID = "travel_order_id";
     private static final String KEY_DRIVER_ID = "driver_id";
-    private static final String KEY_SUCCESSFULLY_SENT_TO_SERVER= "successfully";
+    private static final String KEY_SUCCESSFULLY_SENT_TO_SERVER= "sentToServer";
+    private static final String KEY_USED_FOR_ROUTING = "usedForRouting";
 
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,6 +52,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
                 + KEY_EMAIL + " TEXT UNIQUE," + KEY_UID + " TEXT,"
@@ -60,15 +62,18 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         String CREATE_LOCATION_TABLE = "CREATE TABLE " + TABLE_LOCATION + "("
                 + KEY_LOCATION_ID + " INTEGER PRIMARY KEY," + KEY_LATITUDE + " TEXT,"
                 + KEY_LONGITUDE + " TEXT," + KEY_TRAVEL_ORDER_ID + " INTEGER,"
-                + KEY_DRIVER_ID + " INTEGER," + KEY_SUCCESSFULLY_SENT_TO_SERVER + " INTEGER" + ")";
+                + KEY_DRIVER_ID + " INTEGER," + KEY_SUCCESSFULLY_SENT_TO_SERVER + " INTEGER,"
+                + KEY_USED_FOR_ROUTING + " BOOLEAN" + ")";
         db.execSQL(CREATE_LOCATION_TABLE);
 
         Log.d(TAG, "Database tables created");
+
     }
 
     // Upgrading database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
 
@@ -77,12 +82,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(db);
+
     }
 
     /**
      * Storing user details in database
      * */
     public void addUser(String name, String email, String uid, String created_at) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -96,12 +103,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
 
         Log.d(TAG, "New user inserted into sqlite: " + id);
+
     }
 
     /**
      * Getting user data from database
      * */
     public HashMap<String, String> getUserDetails() {
+
         HashMap<String, String> user = new HashMap<String, String>();
         String selectQuery = "SELECT  * FROM " + TABLE_USER;
 
@@ -121,33 +130,41 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Fetching user from Sqlite: " + user.toString());
 
         return user;
+
     }
 
     /**
      * Re crate database Delete all tables and create them again
      * */
     public void deleteUsers() {
+
         SQLiteDatabase db = this.getWritableDatabase();
         // Delete All Rows
         db.delete(TABLE_USER, null, null);
         db.close();
 
         Log.d(TAG, "Deleted all user info from sqlite");
+
     }
 
-    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////LOCATION PART////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Storing location details in database
      * */
-    public long logLocation(String latitude, String longitude, int travelOrderID, int driverID, int successfully) {
+    public long logLocation(String latitude, String longitude, int travelOrderID, int driverID, int sentToServer, int usedForRouting) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_LATITUDE, latitude); // Geografska duzina
-        values.put(KEY_LONGITUDE, longitude); // Geografska sirina
+        values.put(KEY_LATITUDE, latitude); // Geografska sirina
+        values.put(KEY_LONGITUDE, longitude); // Geografska duzina
         values.put(KEY_TRAVEL_ORDER_ID, travelOrderID); // ID putnog naloga
         values.put(KEY_DRIVER_ID, driverID); // ID vozaca
-        values.put(KEY_SUCCESSFULLY_SENT_TO_SERVER, successfully); // Uspesnot 1/0 (ok/not ok)
+        values.put(KEY_SUCCESSFULLY_SENT_TO_SERVER, sentToServer); // Uspesnot 1/0 (ok/not ok)
+        values.put(KEY_USED_FOR_ROUTING, usedForRouting); // Korisceno za rutu 1/0 (yes/no)
 
         // Inserting Row
         long id = db.insert(TABLE_LOCATION, null, values);
@@ -156,64 +173,118 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "New location inserted into sqlite: " + id);
 
         return id;
+
     }
 
+//    /**
+//     * Fetching last location from database
+//     * */
+//    public HashMap<String, String> getLastLocation() {
+//
+//        HashMap<String, String> location = new HashMap<String, String>();
+//        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 1";
+//
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery(selectQuery, null);
+//        // Move to first row
+//        cursor.moveToFirst();
+//        if (cursor.getCount() > 0) {
+//            location.put("latitude", cursor.getString(1));
+//            location.put("longitude", cursor.getString(2));
+//            location.put("travelOrderID", cursor.getString(3));
+//            location.put("driverID", cursor.getString(4));
+//            location.put("sentToServer", cursor.getString(5));
+//            location.put("usedForRouting", cursor.getString(6));
+//        }
+//        cursor.close();
+//        db.close();
+//
+//        Log.d(TAG, "Fetching last location from Sqlite: " + location.toString());
+//
+//        return location;
+//
+//    }
+
     /**
-     * Getting user data from database
+     * Fetching location for origin from database
      * */
-    public HashMap<String, String> getLastLocation() {
-        HashMap<String, String> location = new HashMap<String, String>();
-        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 1";
+    public ArrayList<String[]> getLocationsForRealRoute() {
+
+        int recordsNumber = 0;
+        ArrayList<String[]> locations = new ArrayList<String[]>();
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE usedForRouting = 0 ORDER BY id DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+
+        recordsNumber = cursor.getCount();
         // Move to first row
         cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            location.put("latitude", cursor.getString(1));
-            location.put("longitude", cursor.getString(2));
-            location.put("travelOrderID", cursor.getString(3));
-            location.put("driverID", cursor.getString(4));
-            location.put("successfully", cursor.getString(5));
+
+        if(recordsNumber < 1){
+            return null;
+        }else if(recordsNumber == 1){
+
+            String[] location = new String[6];
+
+            location[0] = cursor.getString(0);
+            location[1] = cursor.getString(1);
+            location[2] = cursor.getString(2);
+            location[3] = cursor.getString(3);
+            location[4] = cursor.getString(4);
+            location[5] = cursor.getString(5);
+
+            locations.add(location);
+
+        }else{
+
+            cursor.moveToLast();
+
+            String[] location = new String[6];
+
+            location[0] = cursor.getString(0);
+            location[1] = cursor.getString(1);
+            location[2] = cursor.getString(2);
+            location[3] = cursor.getString(3);
+            location[4] = cursor.getString(4);
+            location[5] = cursor.getString(5);
+
+            locations.add(location);
+
+            cursor.moveToFirst();
+
+            while (cursor.isLast() == false){
+
+                String[] lokacija = new String[6];
+
+                lokacija[0] = cursor.getString(0);
+                lokacija[1] = cursor.getString(1);
+                lokacija[2] = cursor.getString(2);
+                lokacija[3] = cursor.getString(3);
+                lokacija[4] = cursor.getString(4);
+                lokacija[5] = cursor.getString(5);
+
+                locations.add(lokacija);
+
+                cursor.moveToNext();
+            }
+
         }
+
         cursor.close();
         db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + location.toString());
 
-        return location;
+        Log.d(TAG, "Fetching locations for real route from Sqlite");
+
+        return locations;
     }
 
     /**
-     * Getting user data from database
+     * Fetching unsent locations from database
      * */
-    public HashMap<String, String> getLocationForOrigin() {
-        HashMap<String, String> location = new HashMap<String, String>();
-        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " ORDER BY id DESC LIMIT 2";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        cursor.moveToNext();
-        if (cursor.getCount() > 0) {
-            location.put("latitude", cursor.getString(1));
-            location.put("longitude", cursor.getString(2));
-            location.put("travelOrderID", cursor.getString(3));
-            location.put("driverID", cursor.getString(4));
-            location.put("successfully", cursor.getString(5));
-        }
-        cursor.close();
-        db.close();
-        // return user
-        Log.d(TAG, "Fetching user from Sqlite: " + location.toString());
-
-        return location;
-    }
-
     public List getUnsentLocations() {
         ArrayList<String[]> neposlateLokacije = new ArrayList();
-        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE successfully = 0";
+        String selectQuery = "SELECT * FROM " + TABLE_LOCATION + " WHERE sentToServer = 0";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -222,13 +293,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         while (cursor.isAfterLast() == false){
 
-            String[] lokacija = new String[5];
+            String[] lokacija = new String[6];
 
             lokacija[0] = cursor.getString(0);
             lokacija[1] = cursor.getString(1);
             lokacija[2] = cursor.getString(2);
             lokacija[3] = cursor.getString(3);
             lokacija[4] = cursor.getString(4);
+            lokacija[5] = cursor.getString(5);
 
             neposlateLokacije.add(lokacija);
 
@@ -238,15 +310,17 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
-        // return lokacije
-        Log.d(TAG, "Fetching locations from Sqlite: " + neposlateLokacije.toString());
+        Log.d(TAG, "Fetching unsent locations from Sqlite: " + neposlateLokacije.toString());
 
         return neposlateLokacije;
     }
 
-    public void setLocationSent(String[] location) {
+    /**
+     * Setting flag sentToServer on 1 in record with passed id in table location (Location sent to server)
+     * */
+    public void setLocationSent(String id) {
 
-        String selectQuery = "UPDATE " + TABLE_LOCATION + " SET successfully = 1 WHERE " + location[0];
+        String selectQuery = "UPDATE " + TABLE_LOCATION + " SET sentToServer = 1 WHERE id = " + id;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -256,13 +330,33 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
-        // return user
-        Log.d(TAG, "Setting to sent unsent location with id from Sqlite: " + location[0]);
+        Log.d(TAG, "Setting flag sentToServer on 1 in record in table location with passed id : " + id);
     }
 
+    /**
+     * Setting flag usedForRouting on 1 in record with passed id in table location (Location used for drawing route)
+     * */
+    public void setLocationUsed(String id) {
+
+        String selectQuery = "UPDATE " + TABLE_LOCATION + " SET usedForRouting = 1 WHERE id = " + id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Move to first row
+        cursor.moveToFirst();
+        cursor.close();
+        db.close();
+
+        Log.d(TAG, "Setting flag usedForRouting on 1 in record in table location with passed id : " + id);
+    }
+
+    /**
+     * Fetching number of unsent locations from SQlite database
+     * */
     public int countUnsentLocations() {
         int counter = 0;
-        String selectQuery = "SELECT count(*) FROM " + TABLE_LOCATION + " WHERE successfully = 0";
+        String selectQuery = "SELECT count(*) FROM " + TABLE_LOCATION + " WHERE sentToServer = 0";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -271,8 +365,28 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         counter = cursor.getInt(0);
         cursor.close();
         db.close();
-        // return user
+
         Log.d(TAG, "Fetching number of unsent locations from Sqlite: " + counter);
+
+        return counter;
+    }
+
+    /**
+     * Fetching number of unsent locations from SQlite database
+     * */
+    public int countUnusedLocationsForRoute() {
+        int counter = 0;
+        String selectQuery = "SELECT count(*) FROM " + TABLE_LOCATION + " WHERE usedForRouting = 0";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        counter = cursor.getInt(0);
+        cursor.close();
+        db.close();
+
+        Log.d(TAG, "Fetching number of unused locations for route from Sqlite: " + counter);
 
         return counter;
     }

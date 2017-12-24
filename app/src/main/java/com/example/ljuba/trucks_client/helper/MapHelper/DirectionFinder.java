@@ -40,42 +40,34 @@ public class DirectionFinder {
         this.destination = destination;
     }
 
-    public DirectionFinder(DirectionFinderListener listener, String origin, String destination){
-        this.listener = listener;
-        this.origin = origin;
-        this.destination = destination;
-    }
-
     public void execute() throws UnsupportedEncodingException {
         listener.onDirectionFinderStart();
         new DownloadRawData().execute(createUrl());
     }
 
-    public void executeWithoutWaypoints() throws UnsupportedEncodingException {
+    public void executeRealRouteRequest() throws UnsupportedEncodingException {
         listener.onDirectionFinderStartWithoutCleaning();
-        new DownloadRawDataWithoutCleaning().execute(createUrlWithoutWaypoints());
+        new DownloadRawDataForRealRoute().execute(createUrl());
     }
 
     private String createUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
+        String urlDestination = URLEncoder.encode(destination, "utf-8");
         String urlWaypoints = "";
-        for(int i=0; i < waypoints.length; i++){
-            if(i==0)
-                urlWaypoints += URLEncoder.encode(waypoints[i], "utf-8");
-            else
-                urlWaypoints += "|" + URLEncoder.encode(waypoints[i], "utf-8");
+
+        if(waypoints.length == 0){
+            return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
+        }else{
+            for(int i=0; i < waypoints.length; i++){
+                if(i==0)
+                    urlWaypoints += URLEncoder.encode(waypoints[i], "utf-8");
+                else
+                    urlWaypoints += "|" + URLEncoder.encode(waypoints[i], "utf-8");
+            }
+
+            return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&waypoints=" + urlWaypoints + "&key=" + GOOGLE_API_KEY;
         }
 
-        String urlDestination = URLEncoder.encode(destination, "utf-8");
-
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&waypoints=" + urlWaypoints + "&key=" + GOOGLE_API_KEY;
-    }
-
-    private String createUrlWithoutWaypoints() throws UnsupportedEncodingException {
-        String urlOrigin = URLEncoder.encode(origin, "utf-8");
-        String urlDestination = URLEncoder.encode(destination, "utf-8");
-
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
     }
 
     private class DownloadRawData extends AsyncTask<String, Void, String> {
@@ -114,7 +106,7 @@ public class DirectionFinder {
         }
     }
 
-    private class DownloadRawDataWithoutCleaning extends AsyncTask<String, Void, String> {
+    private class DownloadRawDataForRealRoute extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -143,7 +135,7 @@ public class DirectionFinder {
         @Override
         protected void onPostExecute(String res) {
             try {
-                parseJSonWithoutCleaning(res);
+                parseJSonForRealRoute(res);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -190,7 +182,7 @@ public class DirectionFinder {
         listener.onDirectionFinderSuccess(routes);
     }
 
-    private void parseJSonWithoutCleaning(String data) throws JSONException {
+    private void parseJSonForRealRoute(String data) throws JSONException {
         if (data == null)
             return;
 

@@ -25,16 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView txtName;
     private TextView txtEmail;
     private Button btnLogout;
-    //private Button btnOpenMap;
     private Button btnTabs;
     private Button btnDb;
     private Button btnListView;
 
-
     private SQLiteHandler db;
     private SessionManager session;
-
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         txtName = (TextView) findViewById(R.id.name);
         txtEmail = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
-        //btnOpenMap = (Button) findViewById(R.id.btn_open_map);
         btnTabs = (Button) findViewById(R.id.btn_tabs);
         btnDb = (Button) findViewById(R.id.btn_db);
         btnListView = (Button) findViewById(R.id.btn_list_view);
@@ -98,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         btnListView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -107,39 +103,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-
-                            Double originLat = location.getLatitude();
-                            Double originLon = location.getLongitude();
-
-                            // Inserting row in location table
-                            db.logLocation(originLat.toString(), originLon.toString(),1,1,1);
-
-                        }
-                    }
-                });
-
     }
-
-
 
     /**
      * Logging out the user. Will set isLoggedIn flag to false in shared

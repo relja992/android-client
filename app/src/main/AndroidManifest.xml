@@ -31,9 +31,6 @@
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".activity.MapsActivity"
-            android:label="@string/title_activity_maps" />
-        <activity
             android:name=".activity.AndroidDatabaseManager"
             android:label="@string/title_activity_maps" />
         <activity

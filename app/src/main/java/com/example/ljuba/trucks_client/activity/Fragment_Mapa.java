@@ -91,7 +91,7 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
                     }
                 }
 
-                sendRequestForRoute();
+                sendInitialRequestForRoute();
 
                 googleMap.getUiSettings().setCompassEnabled(true);
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -174,8 +174,8 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
         }
     }
 
-    //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
-    public void sendRequestForRoute() {
+    //Inicijalno slanje zahteva za pronalazenje najkrace rute ka google api-ju. Ruta kojom vozilo treba da se krece.
+    public void sendInitialRequestForRoute() {
 
         //Umesto ovog ce ici POST request za dobijanje tacaka
         String origin = "44.801264, 20.521455";
@@ -195,14 +195,30 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
     }
 
     //Slanje zahteva za pronalazenje najkrace rute ka google api-ju
-    public void sendRequestForRoutePeriodically(String sirina, String duzina) {
+    public void sendRequestForRealRoute(String sirina, String duzina) {
 
-        HashMap<String, String> lastLocation = db.getLocationForOrigin();
-        String origin = lastLocation.get("latitude") + ", " + lastLocation.get("longitude");
+        ArrayList<String[]> locations = db.getLocationsForRealRoute();
+        String[] waypoints = new String[locations.size()-1];
+
+        String[] originStringArray = locations.get(0);
+        String origin = originStringArray[1] + ", " + originStringArray[2];
+        db.setLocationUsed(originStringArray[0]);
+
         String destination = sirina + ", " + duzina;
 
+        if(locations.size() >= 2){
+            for(int i = 1; i < locations.size(); i++){
+
+                String[] waypoint = locations.get(i);
+                waypoints[i-1] = waypoint[1] + ", " + waypoint[2];
+
+                db.setLocationUsed(waypoint[0]);
+
+            }
+        }
+
         try {
-            new DirectionFinder(this, origin, destination).executeWithoutWaypoints();
+            new DirectionFinder(this, origin, waypoints, destination).executeRealRouteRequest();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
