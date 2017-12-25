@@ -119,7 +119,6 @@ public class LoginActivity extends Activity {
                 try {
 
                     JSONObject jObj = new JSONObject(response);
-
                     JSONArray user_array = jObj.getJSONArray("user");
                     JSONObject user = user_array.getJSONObject(0);
                     String message = user.getString("message");

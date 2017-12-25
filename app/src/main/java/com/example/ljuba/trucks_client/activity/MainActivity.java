@@ -22,8 +22,8 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView txtName;
-    private TextView txtEmail;
+    private TextView txtNameSurname;
+    private TextView txtIDStatus;
     private Button btnLogout;
     private Button btnTabs;
     private Button btnDb;
@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtName = (TextView) findViewById(R.id.name);
-        txtEmail = (TextView) findViewById(R.id.email);
+        txtNameSurname = (TextView) findViewById(R.id.name);
+        txtIDStatus = (TextView) findViewById(R.id.email);
         btnLogout = (Button) findViewById(R.id.btnLogout);
         btnTabs = (Button) findViewById(R.id.btn_tabs);
         btnDb = (Button) findViewById(R.id.btn_db);
@@ -59,12 +59,13 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, String> user = db.getUserDetails();
 
         String name = user.get("name");
-        String email = user.get("email");
+        String surname = user.get("surname");
         final String user_id = user.get("uid");
+        final String status = user.get("user_status");
 
         // Displaying the user details on the screen
-        txtName.setText(name);
-        txtEmail.setText(email);
+        txtNameSurname.setText(name+ " "+ surname);
+        txtIDStatus.setText("ID: "+user_id+" Status: "+status);
 
         // Logout button click event
         btnLogout.setOnClickListener(new View.OnClickListener() {

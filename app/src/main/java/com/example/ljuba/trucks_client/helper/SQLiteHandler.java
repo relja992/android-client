@@ -30,9 +30,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Login Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
-    private static final String KEY_EMAIL = "email";
-    private static final String KEY_UID = "uid";
-    private static final String KEY_CREATED_AT = "created_at";
+    private static final String KEY_SURNAME = "surname";
+    private static final String KEY_UID = "id_driver";
+    private static final String KEY_USER_STATUS = "user_status";
 
     // Location table name
     private static final String TABLE_LOCATION = "location";
@@ -55,8 +55,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_EMAIL + " TEXT UNIQUE," + KEY_UID + " TEXT,"
-                + KEY_CREATED_AT + " TEXT" + ")";
+                + KEY_SURNAME + " TEXT UNIQUE," + KEY_UID + " TEXT,"
+                + KEY_USER_STATUS + " TEXT" + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
         String CREATE_LOCATION_TABLE = "CREATE TABLE " + TABLE_LOCATION + "("
@@ -88,22 +88,19 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      * */
-    public void addUser(String name, String email, String uid, String created_at) {
-
+    public void addUser(String name, String surname, String uid, String user_status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, name); // Name
-        values.put(KEY_EMAIL, email); // Email
+        values.put(KEY_SURNAME, surname); // Surname
         values.put(KEY_UID, uid); // Email
-        values.put(KEY_CREATED_AT, created_at); // Created At
+        values.put(KEY_USER_STATUS, user_status); // user_status
 
         // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
         db.close(); // Closing database connection
-
         Log.d(TAG, "New user inserted into sqlite: " + id);
-
     }
 
     /**
@@ -120,9 +117,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
             user.put("name", cursor.getString(1));
-            user.put("email", cursor.getString(2));
+            user.put("surname", cursor.getString(2));
             user.put("uid", cursor.getString(3));
-            user.put("created_at", cursor.getString(4));
+            user.put("user_status", cursor.getString(4));
         }
         cursor.close();
         db.close();
