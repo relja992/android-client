@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnTabs;
     private Button btnDb;
     private Button btnListView;
-
+    private String user_id;
     private SQLiteHandler db;
     private SessionManager session;
 
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         String name = user.get("name");
         String surname = user.get("surname");
-        final String user_id = user.get("uid");
+        user_id = user.get("uid");
         final String status = user.get("user_status");
 
         // Displaying the user details on the screen
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,NavDraActivity.class);
-                intent.putExtra(user_id,user_id);
+                intent.putExtra("user_id",user_id);
                 startActivity(intent);
             }
         });
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,ListViewActivity.class);
+                intent.putExtra("user_id",user_id);
                 startActivity(intent);
             }
         });

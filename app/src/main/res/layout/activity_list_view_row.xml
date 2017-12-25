@@ -6,33 +6,36 @@
 
 
     <TextView
+        android:id="@+id/id_pn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+
+    <TextView
         android:id="@+id/broj_pn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/id_pn"
 
+        />
 
     <TextView
         android:id="@+id/vozac"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/broj_pn"
-        android:layout_marginTop="5dp"
-       />
+        android:layout_below="@+id/broj_pn" />
 
     <TextView
-        android:id="@+id/vozilo"
+        android:id="@+id/status_pn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/vozac"
+        android:layout_below="@+id/vozac"
         android:layout_marginTop="5dp"
-        />
-    <TextView
-        android:id="@+id/status"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/vozilo"
-        android:layout_marginTop="5dp"
-        />
+        android:textAlignment="textEnd"
+       />
+
 
 </RelativeLayout>
