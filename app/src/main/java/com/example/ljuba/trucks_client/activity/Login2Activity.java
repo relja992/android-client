@@ -107,7 +107,7 @@ public class Login2Activity extends Activity {
      * */
     private void checkLogin(final String username, final String password) {
 
-        String URL = AppConfig.URL_REAL_LOGIN + "?user_name=" + username + "&password=" + password;
+        String URL = AppConfig.URL_LOGIN + "?user_name=" + username + "&password=" + password;
 
         // Tag used to cancel the request
         String tag_string_req = "req_login";
