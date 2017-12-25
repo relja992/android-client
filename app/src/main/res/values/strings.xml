@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Trucks-client</string>
-    <string name="hint_email">Emaill</string>
+    <string name="hint_email">Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>

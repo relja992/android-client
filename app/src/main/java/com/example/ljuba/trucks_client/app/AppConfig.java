@@ -4,6 +4,8 @@ public class AppConfig {
 
     // Server user login url
     public static String URL_LOGIN = "http://trucks-server.rimteam.com/users/login";
+    public static final String URL_REAL_LOGIN = "http://transport.evision/ws/login.php";
+//    public static final String URL_REAL_LOGIN = "https://reqres.in/api/users?page=2";
 
     // Server user register url
     public static String URL_REGISTER = "http://trucks-server.rimteam.com/users/register";

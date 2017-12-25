@@ -2,17 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Vozac.iml" filepath="$PROJECT_DIR$/Vozac.iml" />
-      <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\Vozac\Vozac.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\Vozac\Vozac.iml" />
-      <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\driver-app\android-client.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\driver-app\android-client.iml" />
-      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\android-client.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\periodicnoSlanje\android-client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../driver-app/app/app.iml" filepath="$PROJECT_DIR$/../driver-app/app/app.iml" />
-      <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\Vozac\app\app.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\Vozac\app\app.iml" />
-      <module fileurl="file://F:\2.AndroidWorkspace\Truck_Klijent\android-client\app\app.iml" filepath="F:\2.AndroidWorkspace\Truck_Klijent\android-client\app\app.iml" />
-      <module fileurl="file://F:\2.AndroidWorkspace\android-client\driver-app.iml" filepath="F:\2.AndroidWorkspace\android-client\driver-app.iml" />
-      <module fileurl="file://C:\Users\Ljubomir\AndroidStudioProjects\Vozac\periodicnoSlanje.iml" filepath="C:\Users\Ljubomir\AndroidStudioProjects\Vozac\periodicnoSlanje.iml" />
-      <module fileurl="file://E:\AndroidStudioProjects\android-client\periodicnoSlanje.iml" filepath="E:\AndroidStudioProjects\android-client\periodicnoSlanje.iml" />
-      <module fileurl="file://F:\2.AndroidWorkspace\Truck_Klijent\android-client\trucksclient.iml" filepath="F:\2.AndroidWorkspace\Truck_Klijent\android-client\trucksclient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/abcd.iml" filepath="$PROJECT_DIR$/abcd.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\abcd\app\app.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\abcd\app\app.iml" />
+      <module fileurl="file://C:\Users\Ljuba\AndroidStudioProjects\abcd\trucksclient.iml" filepath="C:\Users\Ljuba\AndroidStudioProjects\abcd\trucksclient.iml" />
     </modules>
   </component>
 </project>
