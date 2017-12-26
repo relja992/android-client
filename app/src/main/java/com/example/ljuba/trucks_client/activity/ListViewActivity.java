@@ -39,7 +39,7 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
     // Log tag
     private static final String TAG = ListViewActivity.class.getSimpleName();
 
-
+    String user_id;
     private ProgressDialog pDialog;
     private List<PutniNalog> pn_list = new ArrayList<PutniNalog>();
     private ListView listView;
@@ -52,8 +52,8 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
 
         //ucitavanje podataka iz intenta  neophodnih za ucitavanje  putnih naloga vozaca
         Intent intent = getIntent();
-        String user_id = intent.getStringExtra("user_id");
-        Toast.makeText(getApplicationContext(),user_id,Toast.LENGTH_LONG).show();
+        user_id = intent.getStringExtra("user_id");
+        //Toast.makeText(getApplicationContext(),user_id,Toast.LENGTH_LONG).show();
 
         listView = (ListView) findViewById(R.id.lista_pn);
         adapter = new PNListAdapter(this, pn_list);
@@ -93,6 +93,7 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
                             try {
                                 JSONObject pn = pn_array.getJSONObject(i);
                                 JSONObject pn_detail = pn.getJSONObject("pn");
+
                                 PutniNalog putniNalog = new PutniNalog();
                                 putniNalog.setId_pn(pn_detail.getString("id_pn"));
                                 putniNalog.setBroj_pn("Broj PN: "+pn_detail.getString("broj_pn")+"   Datum: "+pn_detail.getString("vreme_unosa"));
@@ -194,10 +195,11 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         //uzimanje vrednosti broj_pn jer ce trebati na sledecoj za ucitavanje detalja naloga
-        String broj_putnog_naloga = ((TextView) view.findViewById(R.id.broj_pn)).getText().toString();
+        String broj_putnog_naloga = ((TextView) view.findViewById(R.id.id_pn)).getText().toString();
        // Toast.makeText(getApplicationContext(), broj_putnog_naloga +i, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(ListViewActivity.this,NavDraActivity.class);
-        intent.putExtra("broj_pn",broj_putnog_naloga);
+        intent.putExtra("id_pn",broj_putnog_naloga);
+        intent.putExtra("id_vozaca",user_id);
         startActivity(intent);
     }
 }

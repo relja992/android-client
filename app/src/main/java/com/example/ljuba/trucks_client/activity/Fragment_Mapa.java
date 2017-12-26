@@ -63,7 +63,7 @@ public class Fragment_Mapa extends Fragment implements DirectionFinderListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle  savedInstanceState){
 
         View rootView = inflater.inflate(R.layout.fragment_mapa, container, false);
-
+        getActivity().setTitle("Fragment Mapa");
         mMapView= (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();

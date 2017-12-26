@@ -45,6 +45,17 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_SUCCESSFULLY_SENT_TO_SERVER= "sentToServer";
     private static final String KEY_USED_FOR_ROUTING = "usedForRouting";
 
+    private static final String TABLE_TRAVEL_ORDER = "travel_order";
+    private static final String KEY_TO_ID = "id";
+    private static final String KEY_TO_ID_TO = "id_to";
+    private static final String KEY_ID_TRUCK = "id_truck";
+    private static final String KEY_ID_DRIVER = "driver_id";
+    private static final String KEY_TO_STATUS = "status";
+
+
+
+
+
     public SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -66,6 +77,12 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_USED_FOR_ROUTING + " BOOLEAN" + ")";
         db.execSQL(CREATE_LOCATION_TABLE);
 
+        String CREATE_TRAVEL_ORDER_TABLE = "CREATE TABLE " + TABLE_TRAVEL_ORDER + "("
+                + KEY_TO_ID + " INTEGER PRIMARY KEY," + KEY_TO_ID_TO + " TEXT,"
+                + KEY_ID_TRUCK + " TEXT," + KEY_ID_DRIVER + " TEXT,"
+                + KEY_TO_STATUS + " TEXT" + ")";
+        db.execSQL(CREATE_TRAVEL_ORDER_TABLE);
+
         Log.d(TAG, "Database tables created");
 
     }
@@ -79,6 +96,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRAVEL_ORDER);
 
         // Create tables again
         onCreate(db);
@@ -143,6 +162,42 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "Deleted all user info from sqlite");
 
     }
+
+
+    ///////////////////////////TRAVEL ORDER ////////////////////////////////////////////
+    /**
+     * Storing user details in database
+     * */
+    public void addTravelOrderDetails(String id_to, String id_truck, String id_driver, String to_status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_TO_ID_TO, id_to); // id putnog naloga
+        values.put(KEY_ID_TRUCK, id_truck); // id_vozila
+        values.put(KEY_ID_DRIVER, id_driver); // id vozaca
+        values.put(KEY_TO_STATUS, to_status); // status putnog naloga
+
+        // Inserting Row
+        long id = db.insert(TABLE_TRAVEL_ORDER, null, values);
+        db.close(); // Closing database connection
+        Log.d(TAG, "New TO details inserted into sqlite: " + id);
+    }
+
+
+    /**
+     *  Delete travel order details
+     * */
+    public void deleteTravelOrder() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Delete All Rows
+        db.delete(TABLE_TRAVEL_ORDER, null, null);
+        db.close();
+        Log.d(TAG, "Deleted travel order details");
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////LOCATION PART////////////////////////////////////////

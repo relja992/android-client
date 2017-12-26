@@ -14,4 +14,7 @@ public class AppConfig {
 
     //url testiranje prikaza putnih naloga
     public static final String URL_PN_LISTVIEW = "http://transport.evision/ws/get_pn_list.php";
+
+    //url testiranje prikaza detalja putnih naloga
+    public static final String URL_PN_DETAILS = "http://transport.evision/ws/get_pn_details.php";
 }

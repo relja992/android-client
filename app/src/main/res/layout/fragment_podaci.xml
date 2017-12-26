@@ -7,10 +7,67 @@
 
 
     <TextView
-        android:id="@+id/txt_frag_2"
+        android:id="@+id/tv_broj_putnog_naloga"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Podaci fragment" />
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/tv_miv_pocetka"
+        android:layout_marginTop="57dp"
+      />
+
+    <TextView
+        android:id="@+id/tv_vozac"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_broj_putnog_naloga"
+        android:layout_below="@+id/tv_broj_putnog_naloga"
+        android:layout_marginTop="21dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_vozilo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_vozac"
+        android:layout_below="@+id/tv_vozac"
+        android:layout_marginTop="31dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_autobaza"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_vozilo"
+        android:layout_below="@+id/tv_vozilo"
+        android:layout_marginTop="28dp"
+       />
+
+    <TextView
+        android:id="@+id/tv_miv_pocetka"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tv_autobaza"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="29dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_miv_zavrsetka"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_miv_pocetka"
+        android:layout_below="@+id/tv_miv_pocetka"
+        android:layout_marginTop="23dp"
+         />
+
+    <TextView
+        android:id="@+id/tv_status_pn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_miv_zavrsetka"
+        android:layout_below="@+id/tv_miv_zavrsetka"
+        android:layout_marginTop="19dp"
+        />
+
 </RelativeLayout>
